@@ -23,8 +23,6 @@ void CvSURFEvaluator::setImage(const Mat &img, uchar clsLabel, int idx)
 {
 	CV_DbgAssert(!sum.empty());
 	CvFeatureEvaluator::setImage(img, clsLabel, idx);
-	Mat innSum(winSize.height + 1, winSize.width + 1, sum.type(), sum.ptr<int>((int)idx));
-	integral(img, innSum);
 }
 
 void CvSURFEvaluator::writeFeatures(FileStorage &fs, const Mat& featureMap) const
