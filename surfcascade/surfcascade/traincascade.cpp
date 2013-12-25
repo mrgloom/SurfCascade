@@ -21,7 +21,8 @@ int main( int argc, char* argv[] )
     CvCascadeBoostParams stageParams;
     Ptr<CvFeatureParams> featureParams[] = { makePtr<CvHaarFeatureParams>(),
                                              makePtr<CvLBPFeatureParams>(),
-                                             makePtr<CvHOGFeatureParams>()
+                                             makePtr<CvHOGFeatureParams>(),
+                                             makePtr<CvSURFFeatureParams>()
                                            };
     int fc = sizeof(featureParams)/sizeof(featureParams[0]);
     if( argc == 1 )

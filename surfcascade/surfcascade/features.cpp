@@ -60,6 +60,7 @@ Ptr<CvFeatureParams> CvFeatureParams::create( int featureType )
     return featureType == HAAR ? Ptr<CvFeatureParams>(new CvHaarFeatureParams) :
         featureType == LBP ? Ptr<CvFeatureParams>(new CvLBPFeatureParams) :
         featureType == HOG ? Ptr<CvFeatureParams>(new CvHOGFeatureParams) :
+        featureType == SURF ? Ptr<CvFeatureParams>(new CvSURFFeatureParams) :
         Ptr<CvFeatureParams>();
 }
 
@@ -89,5 +90,6 @@ Ptr<CvFeatureEvaluator> CvFeatureEvaluator::create(int type)
     return type == CvFeatureParams::HAAR ? Ptr<CvFeatureEvaluator>(new CvHaarEvaluator) :
         type == CvFeatureParams::LBP ? Ptr<CvFeatureEvaluator>(new CvLBPEvaluator) :
         type == CvFeatureParams::HOG ? Ptr<CvFeatureEvaluator>(new CvHOGEvaluator) :
+        type == CvFeatureParams::SURF ? Ptr<CvFeatureEvaluator>(new CvSURFEvaluator) :
         Ptr<CvFeatureEvaluator>();
 }

@@ -17,6 +17,7 @@
     <ClInclude Include="HOGfeatures.h" />
     <ClInclude Include="imagestorage.h" />
     <ClInclude Include="lbpfeatures.h" />
+    <ClInclude Include="surffeatures.h" />
     <ClInclude Include="traincascade_features.h" />
   </ItemGroup>
   <ItemGroup>
@@ -27,7 +28,11 @@
     <ClCompile Include="HOGfeatures.cpp" />
     <ClCompile Include="imagestorage.cpp" />
     <ClCompile Include="lbpfeatures.cpp" />
+    <ClCompile Include="surffeatures.cpp" />
     <ClCompile Include="traincascade.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{CE336FB3-A0D8-4CA2-913C-AE32A3F02544}</ProjectGuid>
@@ -67,10 +72,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

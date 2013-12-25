@@ -36,6 +36,9 @@
     <ClInclude Include="traincascade_features.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="surffeatures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="boost.cpp">
@@ -62,5 +65,11 @@
     <ClCompile Include="traincascade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="surffeatures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

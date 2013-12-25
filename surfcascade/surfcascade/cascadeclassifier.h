@@ -6,6 +6,7 @@
 #include "haarfeatures.h"
 #include "lbpfeatures.h"
 #include "HOGfeatures.h" //new
+#include "surffeatures.h"  //custom
 #include "boost.h"
 #include <opencv/cv.h>
 #include <opencv/cxcore.h>
@@ -56,6 +57,8 @@
 #define CC_RECT "rect"
 
 #define CC_HOG "HOG"
+
+#define CC_SURF "SURF"
 
 #ifdef _WIN32
 #define TIME( arg ) (((double) clock()) / CLOCKS_PER_SEC)

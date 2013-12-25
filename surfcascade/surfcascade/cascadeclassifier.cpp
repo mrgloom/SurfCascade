@@ -7,7 +7,7 @@ using namespace std;
 using namespace cv;
 
 static const char* stageTypes[] = { CC_BOOST };
-static const char* featureTypes[] = { CC_HAAR, CC_LBP, CC_HOG };
+static const char* featureTypes[] = { CC_HAAR, CC_LBP, CC_HOG, CC_SURF };
 
 CvCascadeParams::CvCascadeParams() : stageType( defaultStageType ),
     featureType( defaultFeatureType ), winSize( cvSize(24, 24) )
@@ -30,6 +30,7 @@ void CvCascadeParams::write( FileStorage &fs ) const
     string featureTypeStr = featureType == CvFeatureParams::HAAR ? CC_HAAR :
                             featureType == CvFeatureParams::LBP ? CC_LBP :
                             featureType == CvFeatureParams::HOG ? CC_HOG :
+                            featureType == CvFeatureParams::SURF ? CC_SURF :
                             0;
     CV_Assert( !stageTypeStr.empty() );
     fs << CC_FEATURE_TYPE << featureTypeStr;
@@ -56,6 +57,7 @@ bool CvCascadeParams::read( const FileNode &node )
     featureType = !featureTypeStr.compare( CC_HAAR ) ? CvFeatureParams::HAAR :
                   !featureTypeStr.compare( CC_LBP ) ? CvFeatureParams::LBP :
                   !featureTypeStr.compare( CC_HOG ) ? CvFeatureParams::HOG :
+                  !featureTypeStr.compare( CC_SURF ) ? CvFeatureParams::SURF :
                   -1;
     if (featureType == -1)
         return false;
