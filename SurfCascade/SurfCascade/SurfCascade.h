@@ -9,6 +9,7 @@ static const int n_bins = 8;
 static const int n_cells = 4;
 static const int dim = n_bins * n_cells;
 static const int step = 4;
+static const int min_cell_edge = 3;
 
 void t2b_filter(const cv::Mat& img_padded, cv::Mat& img_filtered, int bin);
 void get_feature_rects(int x, int y, cv::Size shape, int cell_edge, cv::Rect rects[]);

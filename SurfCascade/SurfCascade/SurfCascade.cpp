@@ -10,17 +10,18 @@
 using namespace std;
 using namespace cv;
 
-static const Size win_size = { 20, 20 };
-static const int sample_count = 100;
+static const Size win_size = { 19, 19 };
 
 int main(int argc, char *argv[])
 {
     /* get file names */
+    string filepath = "D:/facedata/train/face/";
+    string files = filepath + string("*.pgm");
     WIN32_FIND_DATA ffd;
     HANDLE hFind = INVALID_HANDLE_VALUE;
     vector<string> pos_files;
 
-    hFind = FindFirstFile("D:\\test\\*", &ffd);
+    hFind = FindFirstFile(files.c_str(), &ffd);
     if (hFind == INVALID_HANDLE_VALUE) return -1;
     do {
         pos_files.push_back(string(ffd.cFileName));
@@ -30,15 +31,17 @@ int main(int argc, char *argv[])
     /* read images */
     vector<Mat> pos_imgs;
 
+    cout << "Reading files..." << endl;
     for (vector<string>::iterator it = pos_files.begin(); it != pos_files.end(); ++it) {
-        pos_imgs.push_back(Mat(imread(*it, IMREAD_GRAYSCALE)));
+        pos_imgs.push_back(imread(filepath + *it, IMREAD_GRAYSCALE));
     }
 
     /* iterate images */
     Mat sums[n_bins];
-    Mat img_padded(win_size.height + 1, win_size.width + 1, CV_32SC1);
-    Mat img_filtered(win_size.height, win_size.width, CV_32SC1);
+    Mat img_padded;
+    Mat img_filtered(win_size.height, win_size.width, CV_8UC1);
 
+    cout << "Iterating images..." << endl;
     for (vector<Mat>::size_type i = 0; i != pos_imgs.size(); i++) {
         Mat img = pos_imgs[i];
 
@@ -55,12 +58,12 @@ int main(int argc, char *argv[])
         Rect rects[4];
         vector<array<float, dim>> features;
 
-        for (int j = 0; j < sizeof(shapes); j++) {
+        for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++) {
             Size shape = shapes[j];
 
-            for (int cell_edge = 6; cell_edge <= win_size.width / 2; cell_edge++) {
-                for (int y = 0; y < win_size.height; y += step)
-                for (int x = 0; x < win_size.width; x += step) {
+            for (int cell_edge = min_cell_edge; cell_edge <= win_size.width / 2; cell_edge++) {
+                for (int y = 0; y + shape.height * cell_edge < win_size.height; y += step)
+                for (int x = 0; x + shape.width * cell_edge < win_size.width; x += step) {
                     get_feature_rects(x, y, shape, cell_edge, rects);
                     array<float, dim> feature;
                     calc_feature_value(sums, rects, feature);
@@ -93,22 +96,22 @@ void t2b_filter(const Mat& img_padded, Mat& img_filtered, int bin)
                 */
             case 0:
             case 1:
-                d = -img_padded.at<int>(y, x - 1) + img_padded.at<int>(y, x + 1);
+                d = -img_padded.at<uchar>(y, x - 1) + img_padded.at<uchar>(y, x + 1);
                 break;
             case 2:
             case 3:
-                d = -img_padded.at<int>(y - 1, x) + img_padded.at<int>(y + 1, x);
+                d = -img_padded.at<uchar>(y - 1, x) + img_padded.at<uchar>(y + 1, x);
                 break;
             case 4:
             case 5:
-                d = -img_padded.at<int>(y - 1, x - 1) + img_padded.at<int>(y + 1, x + 1);
+                d = -img_padded.at<uchar>(y - 1, x - 1) + img_padded.at<uchar>(y + 1, x + 1);
                 break;
             case 6:
             case 7:
-                d = -img_padded.at<int>(y + 1, x - 1) + img_padded.at<int>(y - 1, x + 1);
+                d = -img_padded.at<uchar>(y + 1, x - 1) + img_padded.at<uchar>(y - 1, x + 1);
                 break;
             }
-            img_filtered.at<int>(y - 1, x - 1) = abs(d) + d * (bin % 2 ? 1 : -1);
+            img_filtered.at<uchar>(y - 1, x - 1) = abs(d) + d * (bin % 2 ? 1 : -1);
         }
     }
 }
