@@ -11,13 +11,59 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SurfCascade.h">
+    <ClCompile Include="Source\FeatureExtractors\DenseSURFFeatureExtractor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\FeatureExtractors\FeatureExtractor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SurfCascade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\FeatureExtractors\DenseSURFFeatureExtractor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\FeatureExtractors\FeatureExtractor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\CascadeClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\LOG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SurfCascade.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <None Include="OpenCV_Debug.props" />
+    <None Include="OpenCV_Release.props" />
   </ItemGroup>
 </Project>
