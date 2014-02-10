@@ -38,7 +38,7 @@ void DenseSURFFeatureExtractor::ExtractFeatures(string filename, vector<vector<d
     }
 
     /* compute features */
-    Rect rects[4];
+    Rect rects[n_cells];
 
     for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++) {
         Size shape = shapes[j];
@@ -116,7 +116,7 @@ void DenseSURFFeatureExtractor::CalcFeatureValue(const Mat sums[], Rect rects[],
             s2 = sum.at<int>(rects[i].x, rects[i].y + rects[i].height);
             s3 = sum.at<int>(rects[i].x + rects[i].width, rects[i].y + rects[i].height);
             s = s3 - s2 - s1 + s0;
-            feature[i * j] = s;
+            feature[i * n_bins + j] = s;
         }
     }
 
