@@ -44,8 +44,8 @@ void DenseSURFFeatureExtractor::ExtractFeatures(string filename, vector<vector<d
         Size shape = shapes[j];
 
         for (int cell_edge = min_cell_edge; cell_edge <= win_size.width / 2; cell_edge++) {
-            for (int y = 0; y + shape.height * cell_edge < win_size.height; y += step)
-            for (int x = 0; x + shape.width * cell_edge < win_size.width; x += step) {
+            for (int y = 0; y + shape.height * cell_edge <= win_size.height; y += step)
+            for (int x = 0; x + shape.width * cell_edge <= win_size.width; x += step) {
                 GetFeatureRects(x, y, shape, cell_edge, rects);
                 vector<double> feature;
                 CalcFeatureValue(sums, rects, feature);
