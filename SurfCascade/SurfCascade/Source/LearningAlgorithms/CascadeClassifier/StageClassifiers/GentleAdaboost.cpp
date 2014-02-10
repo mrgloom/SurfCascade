@@ -15,14 +15,19 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
     n_pos = (int)count(y.begin(), y.end(), true);
     n_neg = (int)(n_total - n_pos);
 
+    assert(n_pos == n_neg);
+
     /* normalize initial weights */
     vector<double> weights(n_pos, 1.0 / n_pos);
     vector<double> weights_neg(n_neg, 1.0 / n_neg);
     weights.insert(weights.end(), weights_neg.begin(), weights_neg.end());
 
     /* boosting */
+    LOG_INFO("boosting begin");
     for (int t = 0; t < max_iters; t++)
     {
+        LOG_INFO("boosting round " << t);
+
         /* sort sample by weights */
         vector<int> index(weights.size());
         for (int i = 0; i < index.size(); i++)
@@ -41,9 +46,10 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
         {
             /* get weak classifier's training set */
             vector<vector<double>> samples_X;
-            vector<double> samples_y;
-
+            vector<bool> samples_y;
             vector<double> feature;
+
+            assert(sample_num <= n_total);
             for (int i = 0; i < sample_num; i++)
             {
                 feature = X[index[i]][k];
@@ -76,7 +82,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
         weak_classifiers.push_back(best_weak_classifier);
 
         /* if AUC score is converged, break the loop */
-        if (total_AUC_score - best_AUC_score < 0.001)
+        if (best_AUC_score - total_AUC_score < 0.001)
         {
             total_AUC_score = best_AUC_score;
             break;
@@ -107,10 +113,12 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
                 weights[i] /= sum_weights_neg;
         }
     }
+    LOG_INFO("boosting end");
 
     /* backward removing */
     while (true)
     {
+        break;
     }
 }
 
@@ -125,6 +133,5 @@ double GentleAdaboost::Predict(vector<vector<double>> x)
 
     prob = sum / weak_classifiers.size();
 
-    LOG_DEBUG(prob);
     return prob;
 }

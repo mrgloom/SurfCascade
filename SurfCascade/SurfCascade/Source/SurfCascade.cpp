@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <array>
+#include <fstream>
 
 using std::string;
 using std::array;
@@ -29,8 +30,8 @@ int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
 
 int main(int argc, char *argv[])
 {
-    string pos_folder = "D:/facedata/train/face/";
-    string neg_folder = "D:/facedata/train/non-face/";
+    string pos_folder = "D:/facedata/train1/face/";
+    string neg_folder = "D:/facedata/train1/non-face/";
     string wildcard = string("*.pgm");
 
     /* get file names and labels */
@@ -56,6 +57,22 @@ int main(int argc, char *argv[])
         dense_surf_feature_extractor.ExtractFeatures(filepaths[i], features_img);
         features_all.push_back(features_img);
     }
+
+    using std::ofstream;
+    ofstream f("a.txt");
+    for (int i = 0; i < 100; i++)
+    {
+        for (int j = 0; j < features_all[0].size(); j++)
+        {
+            for (int k = 0; k < features_all[0][0].size(); k++)
+            {
+                f << features_all[0][j][k] << ',';
+            }
+            f << endl;
+        }
+    }
+    f.close();
+    return 0;
 
     cout << "Training cascade classifier..." << endl;
     /* train cascade classifier */

@@ -22,10 +22,24 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
     FPR = 1.0;
     TPR = 1.0;
 
-    int j = n_pos;
+    int j = n_pos * 2;
 
+    LOG_INFO("cascade stages begin");
     for (int i = 0; i < max_stages_num && FPR > FPR_target; i++)
     {
+        LOG_INFO("cascade stage " << i);
+
+        shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
+
+        stage_classifier->Train(samples_X, samples_y);
+        
+        /* search ROC curve */
+        stage_classifier->SearchTheta(samples_X, samples_y);
+        FPR *= stage_classifier->FPR;
+        TPR *= stage_classifier->TPR;
+
+        stage_classifiers.push_back(stage_classifier);
+
         /* renew samples */
         samples_X.erase(samples_X.begin() + n_pos, samples_X.end());
         samples_y.erase(samples_y.begin() + n_pos, samples_y.end());
@@ -46,18 +60,8 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
             LOG_ERROR("Negative samples too few.");
             return;
         }
-
-        shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
-
-        stage_classifier->Train(X, y);
-        
-        /* search ROC curve */
-        stage_classifier->SearchTheta(X, y);
-        FPR *= stage_classifier->FPR;
-        TPR *= stage_classifier->TPR;
-
-        stage_classifiers.push_back(stage_classifier);
     }
+    LOG_INFO("cascade stages end");
 }
 
 bool CascadeClassifier::Predict(vector<vector<double>> x)

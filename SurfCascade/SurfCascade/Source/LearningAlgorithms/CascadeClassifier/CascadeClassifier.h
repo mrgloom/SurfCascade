@@ -15,9 +15,9 @@ using std::ostream;
 class CascadeClassifier
 {
     vector<shared_ptr<StageClassifier>> stage_classifiers;
-    int max_stages_num;
-    double FPR_target;
-    double TPR_min_perstage;
+    int max_stages_num = 10;
+    double FPR_target = 0.001;
+    double TPR_min_perstage = 0.99;
 
 public:
     double FPR;

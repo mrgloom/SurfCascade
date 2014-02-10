@@ -24,7 +24,7 @@ double dist(vector<double> v1, vector<double> v2)
     return sqrt(sum);
 }
 
-void LogisticRegression::Train(vector<vector<double>> X, vector<double> y)
+void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
 {
     assert(X.size() == y.size());
 
