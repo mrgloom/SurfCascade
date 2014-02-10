@@ -2,14 +2,12 @@
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LOG.h"
 #include <windows.h>
-#include <opencv2/opencv.hpp>
 #include <vector>
 #include <array>
 #include <fstream>
 
 using std::string;
 using std::array;
-using cv::Mat;
 
 int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
 {
@@ -58,21 +56,19 @@ int main(int argc, char *argv[])
         features_all.push_back(features_img);
     }
 
-    using std::ofstream;
-    ofstream f("a.txt");
-    for (int i = 0; i < 100; i++)
-    {
-        for (int j = 0; j < features_all[0].size(); j++)
-        {
-            for (int k = 0; k < features_all[0][0].size(); k++)
-            {
-                f << features_all[0][j][k] << ',';
-            }
-            f << endl;
-        }
-    }
-    f.close();
-    return 0;
+    //using std::ofstream;
+    //ofstream f("singlefile.txt");
+    //f.precision(3);
+    //for (int j = 0; j < features_all[0].size(); j++)
+    //{
+    //    for (int k = 0; k < features_all[0][0].size(); k++)
+    //    {
+    //        f << features_all[0][j][k] << '\t';
+    //    }
+    //    f << endl;
+    //}
+    //f.close();
+    //return 0;
 
     cout << "Training cascade classifier..." << endl;
     /* train cascade classifier */
