@@ -18,7 +18,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const Size shapes[3];
     static const int n_bins = 8;
     static const int n_cells = 4;
-    static const int step = 4;
+    static const int step = 2;
     static const int min_cell_edge = 3;
 
 public:
