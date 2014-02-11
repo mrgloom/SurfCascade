@@ -40,13 +40,13 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
 
         stage_classifiers.push_back(stage_classifier);
 
-        /* renew samples */
+        /* renew negative samples */
         samples_X.erase(samples_X.begin() + n_pos, samples_X.end());
         samples_y.erase(samples_y.begin() + n_pos, samples_y.end());
 
         for (; j < n_total; j++)
         {
-            if (Predict(X[j]) != y[j])
+            if (Predict(X[j]) != y[j]) // == true
             {
                 samples_X.push_back(X[j]);
                 samples_y.push_back(y[j]);
@@ -57,7 +57,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
         }
         if (samples_y.size() != n_pos * 2)
         {
-            LOG_ERROR("Negative samples too few.");
+            LOG_ERROR("Lack of negative samples.");
             return;
         }
     }
