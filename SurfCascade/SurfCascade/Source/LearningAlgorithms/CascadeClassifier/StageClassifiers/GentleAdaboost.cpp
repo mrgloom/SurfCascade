@@ -79,6 +79,8 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
             }
         }
 
+        LOG_DEBUG("best_AUC_score: " << best_AUC_score);
+
         weak_classifiers.push_back(best_weak_classifier);
 
         /* if AUC score is converged, break the loop */
