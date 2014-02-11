@@ -28,28 +28,34 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
 {
     assert(X.size() == y.size());
 
-    theta.assign(X[0].size(), 0.0);
+    theta.assign(X[0].size() + 1, 0.0); // append theta0 to tail
     vector<double> new_theta(theta);
 
     for (int k = 0; k < max_iters; k++)
     {
-        for (int j = 0; j < theta.size(); j++)
+        for (int i = 0; i < X.size(); i++)
         {
-            for (int i = 0; i < X.size(); i++)
+            for (int j = 0; j < theta.size(); j++)
             {
-                theta[j] -= alpha * (Predict(X[i]) - y[i]) * X[i][j];
+                if (j == 0) // update theta0 at first position
+                    new_theta[j] -= alpha * (Predict(X[i]) - y[i]);
+                else
+                    new_theta[j] -= alpha * (Predict(X[i]) - y[i]) * X[i][j - 1];
             }
         }
 
-        new_theta.swap(theta);
-
         if (dist(theta, new_theta) < epsilon)
+        {
+            new_theta.swap(theta);
             break;
+        }
+
+        theta = new_theta;
     }
 }
 
 double LogisticRegression::Predict(vector<double> x)
 {
-    double z = inner_product(theta.begin(), theta.end(), x.begin(), 0.0);
-    return sigmoid(-z);
+    double z = inner_product(theta.begin() + 1, theta.end(), x.begin(), theta[0]);
+    return sigmoid(z);
 }
