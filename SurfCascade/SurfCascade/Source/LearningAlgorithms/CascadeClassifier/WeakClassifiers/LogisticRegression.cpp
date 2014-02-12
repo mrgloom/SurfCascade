@@ -3,17 +3,11 @@
 #include <numeric>
 #include <cassert>
 #include <iostream>
+#include <cmath>
 
 using std::inner_product;
 using std::cout;
 using std::endl;
-
-double sigmoid(double x)
-{
-    double e = 2.718281828;
-
-    return 1.0 / (1.0 + pow(e, -x));
-}
 
 double dist(vector<double> v1, vector<double> v2)
 {
@@ -57,7 +51,8 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
 double LogisticRegression::Predict(vector<double> x)
 {
     double z = inner_product(theta.begin() + 1, theta.end(), x.begin(), theta[0]);
-    return sigmoid(z);
+
+    return 1.0 / (1.0 + exp(-z));
 }
 
 void LogisticRegression::Print()
