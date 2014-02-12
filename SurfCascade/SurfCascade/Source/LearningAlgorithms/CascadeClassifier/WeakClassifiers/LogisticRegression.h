@@ -9,14 +9,15 @@ using std::vector;
 class LogisticRegression : public WeakClassifier
 {
     vector<double> theta;
-    int max_iters = 100;
-    double alpha = 0.0001;
-    double epsilon = 0.0001;
+    int max_iters = 100000;
+    double alpha = 0.00001;
+    double epsilon = 0.001;
 
 public:
     LogisticRegression(int patch_index): WeakClassifier(patch_index) {};
     void Train(vector<vector<double>> X, vector<bool> y);
     double Predict(vector<double> X);
+    void Print();
 };
 
 #endif

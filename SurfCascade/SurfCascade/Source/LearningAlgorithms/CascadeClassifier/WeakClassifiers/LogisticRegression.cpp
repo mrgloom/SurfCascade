@@ -1,8 +1,12 @@
 #include "LogisticRegression.h"
+#include "../../../LOG.h"
 #include <numeric>
 #include <cassert>
+#include <iostream>
 
 using std::inner_product;
+using std::cout;
+using std::endl;
 
 double sigmoid(double x)
 {
@@ -31,7 +35,8 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     theta.assign(X[0].size() + 1, 0.0); // append theta0 to tail
     vector<double> new_theta(theta);
 
-    for (int k = 0; k < max_iters; k++)
+    int k;
+    for (k = 0; k < max_iters; k++)
     {
         for (int i = 0; i < X.size(); i++)
         {
@@ -52,10 +57,23 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
 
         theta = new_theta;
     }
+
+    if (k == max_iters)
+        LOG_DEBUG("k = " << k << '/' << max_iters);
+    else
+        LOG_DEBUG("k = " << k << '/' << max_iters << ", dist < epsilon");
 }
 
 double LogisticRegression::Predict(vector<double> x)
 {
     double z = inner_product(theta.begin() + 1, theta.end(), x.begin(), theta[0]);
     return sigmoid(z);
+}
+
+void LogisticRegression::Print()
+{
+    cout << "theta: ";
+    for (int i = 0; i < theta.size(); i++)
+        cout << theta[i] << ", ";
+    cout << endl;
 }
