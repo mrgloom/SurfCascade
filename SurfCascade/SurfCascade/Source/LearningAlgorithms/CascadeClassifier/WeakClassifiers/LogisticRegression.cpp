@@ -33,35 +33,25 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     assert(X.size() == y.size());
 
     theta.assign(X[0].size() + 1, 0.0); // append theta0 to tail
-    vector<double> new_theta(theta);
+    vector<double> old_theta(theta);
 
-    int k;
-    for (k = 0; k < max_iters; k++)
+    int i;
+    for (i = 0; i < max_iters; i++)
     {
-        for (int i = 0; i < X.size(); i++)
-        {
-            for (int j = 0; j < theta.size(); j++)
-            {
-                if (j == 0) // update theta0 at first position
-                    new_theta[j] -= alpha * (Predict(X[i]) - y[i]);
-                else
-                    new_theta[j] -= alpha * (Predict(X[i]) - y[i]) * X[i][j - 1];
-            }
-        }
+        theta[0] -= alpha * (Predict(X[i]) - y[i]); // update theta0 at first position
+        for (int j = 1; j < theta.size(); j++)
+            theta[j] -= alpha * (Predict(X[i]) - y[i]) * X[i][j - 1];
 
-        if (dist(theta, new_theta) < epsilon)
-        {
-            new_theta.swap(theta);
+        if (dist(theta, old_theta) < epsilon)
             break;
-        }
 
-        theta = new_theta;
+        old_theta = theta;
     }
 
-    if (k == max_iters)
-        LOG_DEBUG("k = " << k << '/' << max_iters);
+    if (i == max_iters)
+        LOG_DEBUG("i = " << i << '/' << max_iters);
     else
-        LOG_DEBUG("k = " << k << '/' << max_iters << ", dist < epsilon");
+        LOG_DEBUG("i = " << i << '/' << max_iters << ", dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
 }
 
 double LogisticRegression::Predict(vector<double> x)
