@@ -32,7 +32,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
 {
     assert(X.size() == y.size());
 
-    theta.assign(X[0].size() + 1, 0.0); // append theta0 to tail
+    theta.assign(X[0].size() + 1, 0.0); // add theta0 to head
     vector<double> old_theta(theta);
 
     int i;
