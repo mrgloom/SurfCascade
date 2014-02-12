@@ -30,25 +30,33 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     vector<double> old_theta(theta);
 
     double diff;
-    int i;
-    for (i = 0; i < max_iters; i++)
+    bool flag = false;
+    int k, i;
+    for (k = 0; k < max_iters; k++)
     {
-        diff = Predict(X[i]) - y[i];
-
-        theta[0] += alpha * diff; // update theta0 at first position
-        for (int j = 1; j < theta.size(); j++)
-            theta[j] += alpha * diff * X[i][j - 1];
-
-        if (dist(theta, old_theta) < epsilon)
+        for (i = 0; i < X.size(); i++)
         {
-            LOG_DEBUG("dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
-            break;
-        }
+            diff = Predict(X[i]) - y[i];
 
-        old_theta = theta;
+            theta[0] += alpha * diff; // update theta0 at first position
+            for (int j = 1; j < theta.size(); j++)
+                theta[j] += alpha * diff * X[i][j - 1];
+
+            if (dist(theta, old_theta) < epsilon)
+            {
+                LOG_DEBUG("dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
+                flag = true;
+                break;
+            }
+
+            old_theta = theta;
+        }
+        
+        if (flag)
+            break;
     }
 
-    LOG_DEBUG("i = " << i << '/' << max_iters);
+    LOG_DEBUG("k = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
 }
 
 double LogisticRegression::Predict(vector<double> x)
