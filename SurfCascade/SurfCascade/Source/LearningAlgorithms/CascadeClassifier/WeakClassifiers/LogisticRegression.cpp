@@ -29,23 +29,26 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     theta.assign(X[0].size() + 1, 0.0); // add theta0 to head
     vector<double> old_theta(theta);
 
+    double diff;
     int i;
     for (i = 0; i < max_iters; i++)
     {
-        theta[0] -= alpha * (Predict(X[i]) - y[i]); // update theta0 at first position
+        diff = Predict(X[i]) - y[i];
+
+        theta[0] += alpha * diff; // update theta0 at first position
         for (int j = 1; j < theta.size(); j++)
-            theta[j] -= alpha * (Predict(X[i]) - y[i]) * X[i][j - 1];
+            theta[j] += alpha * diff * X[i][j - 1];
 
         if (dist(theta, old_theta) < epsilon)
+        {
+            LOG_DEBUG("dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
             break;
+        }
 
         old_theta = theta;
     }
 
-    if (i == max_iters)
-        LOG_DEBUG("i = " << i << '/' << max_iters);
-    else
-        LOG_DEBUG("i = " << i << '/' << max_iters << ", dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
+    LOG_DEBUG("i = " << i << '/' << max_iters);
 }
 
 double LogisticRegression::Predict(vector<double> x)
@@ -57,8 +60,8 @@ double LogisticRegression::Predict(vector<double> x)
 
 void LogisticRegression::Print()
 {
-    cout << "theta: ";
+    cout << "theta: " << endl;
     for (int i = 0; i < theta.size(); i++)
-        cout << theta[i] << ", ";
+        cout << theta[i] << endl;
     cout << endl;
 }
