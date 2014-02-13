@@ -14,6 +14,9 @@
     <ClCompile Include="..\SurfCascade\Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
     <ClCompile Include="TestLogisticRegression.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\SurfCascade\Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A14BCC03-6C65-4393-AA46-C35F429245AA}</ProjectGuid>
     <RootNamespace>TestLogisticRegression</RootNamespace>
