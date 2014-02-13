@@ -36,7 +36,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     {
         for (i = 0; i < X.size(); i++)
         {
-            diff = Predict(X[i]) - y[i];
+            diff = y[i] - Predict(X[i]);
 
             theta[0] += alpha * diff; // update theta0 at first position
             for (int j = 1; j < theta.size(); j++)
