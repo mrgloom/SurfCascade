@@ -42,6 +42,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
             for (int j = 1; j < theta.size(); j++)
                 theta[j] += alpha * diff * X[i][j - 1];
 
+            //if (diff > 0.0000000000000001)
             if (dist(theta, old_theta) < epsilon)
             {
                 LOG_DEBUG("dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
