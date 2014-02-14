@@ -62,14 +62,15 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
             }
 
             /* train weak classifier */
-            LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
             shared_ptr<WeakClassifier> weak_classifier(new LogisticRegression(k));
 
+            LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
             weak_classifier->Train(samples_X, samples_y);
 
             /* evaluate on the whole training set to obtain the AUC score */
             weak_classifiers.push_back(weak_classifier);
             curr_AUC_score = Evaluate(X, y);
+            LOG_DEBUG(", AUC score = " << curr_AUC_score);
             weak_classifiers.pop_back();
 
             /* iterate for best weak classifier */
