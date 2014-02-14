@@ -24,17 +24,20 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
 
     int j = n_pos * 2;
 
-    LOG_INFO("cascade stages begin");
+    LOG_INFO("\tCascade stages begin");
     for (int i = 0; i < max_stages_num && FPR > FPR_target; i++)
     {
-        LOG_INFO("cascade stage " << i);
+        LOG_INFO("\tCascade stage " << i);
 
         shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
 
+        LOG_INFO("\tTraining stage classifier");
         stage_classifier->Train(samples_X, samples_y);
         
         /* search ROC curve */
         stage_classifier->SearchTheta(samples_X, samples_y);
+        LOG_INFO("\tStage classifier FPR = " << stage_classifier->FPR << ", TPR = " << stage_classifier->TPR);
+
         FPR *= stage_classifier->FPR;
         TPR *= stage_classifier->TPR;
 
@@ -57,11 +60,11 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
         }
         if (samples_y.size() != n_pos * 2)
         {
-            LOG_ERROR("Lack of negative samples.");
+            LOG_WARNING("\tLack of negative samples.");
             return;
         }
     }
-    LOG_INFO("cascade stages end");
+    LOG_INFO("\tCascade stages end");
 }
 
 bool CascadeClassifier::Predict(vector<vector<double>> x)

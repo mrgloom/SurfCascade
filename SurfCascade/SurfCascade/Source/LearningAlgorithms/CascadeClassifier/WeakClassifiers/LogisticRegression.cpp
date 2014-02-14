@@ -30,7 +30,6 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     vector<double> old_theta(theta);
 
     double diff;
-    bool flag = false;
     int k, i;
     for (k = 0; k < max_iters; k++)
     {
@@ -45,19 +44,15 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
             //if (diff > 0.0000000000000001)
             if (dist(theta, old_theta) < epsilon)
             {
-                LOG_DEBUG("dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
-                flag = true;
-                break;
+                LOG_DEBUG("\t" << "k = " << k << '/' << max_iters << ", i = " << i << '/' << X.size() << ", dist(" << dist(theta, old_theta) << ") < epsilon(" << epsilon << ")");
+                return;
             }
 
             old_theta = theta;
         }
-
-        if (flag)
-            break;
     }
 
-    LOG_DEBUG("k = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
+    LOG_DEBUG("\tk = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
 }
 
 double LogisticRegression::Predict(vector<double> x)

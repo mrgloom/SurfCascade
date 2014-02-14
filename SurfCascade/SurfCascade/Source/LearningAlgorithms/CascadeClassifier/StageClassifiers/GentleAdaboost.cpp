@@ -23,10 +23,10 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
     weights.insert(weights.end(), weights_neg.begin(), weights_neg.end());
 
     /* boosting */
-    LOG_INFO("boosting begin");
+    LOG_INFO("\t\tBoosting begin");
     for (int t = 0; t < max_iters; t++)
     {
-        LOG_INFO("boosting round " << t);
+        LOG_INFO("\t\tBoosting round " << t);
 
         /* sort sample by weights */
         vector<int> index(weights.size());
@@ -62,6 +62,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
             }
 
             /* train weak classifier */
+            LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
             shared_ptr<WeakClassifier> weak_classifier(new LogisticRegression(k));
 
             weak_classifier->Train(samples_X, samples_y);
@@ -78,8 +79,9 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
                 best_weak_classifier = weak_classifier;
             }
         }
+        LOG_INFO_NN(endl);
 
-        LOG_DEBUG("best_AUC_score: " << best_AUC_score);
+        LOG_INFO("\t\tBest AUC score: " << best_AUC_score);
 
         weak_classifiers.push_back(best_weak_classifier);
 
@@ -115,7 +117,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
                 weights[i] /= sum_weights_neg;
         }
     }
-    LOG_INFO("boosting end");
+    LOG_INFO("\t\tBoosting end");
 
     /* backward removing */
     while (true)
