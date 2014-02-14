@@ -73,6 +73,22 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
             LOG_DEBUG(", AUC score = " << curr_AUC_score);
             weak_classifiers.pop_back();
 
+            /* test on training set */
+            #if SETLEVEL == DEBUG_LEVEL
+            int TP = 0, TN = 0;
+            double prob;
+            for (int i = 0; i < samples_X.size(); i++)
+            {
+                prob = weak_classifier->Predict(samples_X[i]);
+                if ((prob >= 0.5) && samples_y[i] == true)
+                    TP++;
+                else if ((prob < 0.5) && samples_y[i] == false)
+                    TN++;
+            }
+            LOG_DEBUG("\t\tTP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
+            LOG_DEBUG("\t\tRate: " << (double)(TP + TN) / samples_y.size());
+            #endif
+
             /* iterate for best weak classifier */
             if (curr_AUC_score > best_AUC_score)
             {
