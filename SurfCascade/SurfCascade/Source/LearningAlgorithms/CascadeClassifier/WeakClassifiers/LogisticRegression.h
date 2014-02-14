@@ -18,7 +18,6 @@ public:
     void Train(vector<vector<double>> X, vector<bool> y);
     double Predict(vector<double> X);
     void Print();
-    void TrainC(vector<vector<double>> X, vector<double> y);
 };
 
 #endif
