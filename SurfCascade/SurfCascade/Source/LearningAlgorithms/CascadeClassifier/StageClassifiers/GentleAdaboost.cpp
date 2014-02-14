@@ -64,14 +64,8 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
             /* train weak classifier */
             shared_ptr<WeakClassifier> weak_classifier(new LogisticRegression(k));
 
-            LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
+            LOG_INFO("\t\tTraining logistic regression " << k << '/' << patches_num);
             weak_classifier->Train(samples_X, samples_y);
-
-            /* evaluate on the whole training set to obtain the AUC score */
-            weak_classifiers.push_back(weak_classifier);
-            curr_AUC_score = Evaluate(X, y);
-            LOG_DEBUG(", AUC score = " << curr_AUC_score);
-            weak_classifiers.pop_back();
 
             /* test on training set */
             #if SETLEVEL == DEBUG_LEVEL
@@ -85,9 +79,16 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
                 else if ((prob < 0.5) && samples_y[i] == false)
                     TN++;
             }
-            LOG_DEBUG("\t\tTP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
-            LOG_DEBUG("\t\tRate: " << (double)(TP + TN) / samples_y.size());
+            LOG_DEBUG_NN("\t\tWeak classifier: ");
+            LOG_DEBUG_NN("TP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
+            LOG_DEBUG(", Result: " << (double)(TP + TN) / samples_y.size());
             #endif
+
+            /* evaluate on the whole training set to obtain the AUC score */
+            weak_classifiers.push_back(weak_classifier);
+            curr_AUC_score = Evaluate(X, y);
+            LOG_DEBUG(", AUC score = " << curr_AUC_score);
+            weak_classifiers.pop_back();
 
             /* iterate for best weak classifier */
             if (curr_AUC_score > best_AUC_score)
@@ -95,8 +96,9 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
                 best_AUC_score = curr_AUC_score;
                 best_weak_classifier = weak_classifier;
             }
+
+            LOG_DEBUG_NN(endl); // empty line between weak classifiers' debug output
         }
-        LOG_INFO_NN(endl);
 
         LOG_INFO("\t\tBest AUC score: " << best_AUC_score);
 

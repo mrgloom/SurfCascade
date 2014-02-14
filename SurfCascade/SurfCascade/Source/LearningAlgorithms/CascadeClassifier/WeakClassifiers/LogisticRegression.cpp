@@ -44,7 +44,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
             //if (diff > 0.0000000000000001)
             if (dist(theta, old_theta) < epsilon)
             {
-                LOG_DEBUG_NN("\t" << "k = " << k << '/' << max_iters << ", i = " << i << '/' << X.size() << ", dist(" << dist(theta, old_theta) << ") < " << epsilon);
+                LOG_DEBUG("\t\tk = " << k << '/' << max_iters << ", i = " << i << '/' << X.size() << ", dist(" << dist(theta, old_theta) << ") < " << epsilon);
                 return;
             }
 
@@ -52,7 +52,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
         }
     }
 
-    LOG_DEBUG_NN("\tk = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
+    LOG_DEBUG("\t\tk = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
 }
 
 double LogisticRegression::Predict(vector<double> x)
