@@ -9,7 +9,7 @@ using std::flush;
 
 enum LEVELS { ERROR_LEVEL, WARNING_LEVEL, INFO_LEVEL, DEBUG_LEVEL };
 
-#define SETLEVEL DEBUG_LEVEL
+#define SETLEVEL INFO_LEVEL
 
 // append newline
 #define LOG_DEBUG(MSG)   do { if (SETLEVEL >= DEBUG_LEVEL)   cout << /*__FILE__ << ':' << __FUNCTION__ << ':' << __LINE__ << ":DEBUG: "   << */ MSG << endl; } while(0)
