@@ -35,7 +35,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
         stage_classifier->Train(samples_X, samples_y);
         
         /* search ROC curve */
-        stage_classifier->SearchTheta(samples_X, samples_y);
+        stage_classifier->SearchTheta(X, y);
         LOG_INFO("\tStage classifier FPR = " << stage_classifier->FPR << ", TPR = " << stage_classifier->TPR);
 
         FPR *= stage_classifier->FPR;
