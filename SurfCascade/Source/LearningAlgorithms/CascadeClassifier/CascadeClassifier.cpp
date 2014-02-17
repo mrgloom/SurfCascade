@@ -6,6 +6,7 @@
 using std::ostream;
 using std::endl;
 
+/* parameter X: positive samples(files) in the front, negative samples afterwards */
 void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
     assert(X.size() == y.size());
@@ -49,7 +50,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
 
         for (; j < n_total; j++)
         {
-            if (Predict(X[j]) != y[j]) // == true
+            if (Predict(X[j]) == true) // if false positive
             {
                 samples_X.push_back(X[j]);
                 samples_y.push_back(y[j]);
@@ -60,8 +61,8 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
         }
         if (samples_y.size() != n_pos * 2)
         {
-            LOG_WARNING("\tLack of negative samples.");
-            return;
+            LOG_WARNING("\tRunning out of negative samples.");
+            break;
         }
     }
     LOG_INFO("\tCascade stages end");
