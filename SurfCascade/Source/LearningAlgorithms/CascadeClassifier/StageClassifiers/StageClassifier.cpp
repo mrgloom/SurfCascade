@@ -17,7 +17,7 @@ void StageClassifier::SearchTheta(vector<vector<vector<double>>> X, vector<bool>
 
     /* search min TPR */
     double threshhold;
-    for (threshhold = 0.49980; threshhold <= 0.50015; threshhold += 0.000001)
+    for (threshhold = 0; threshhold <= 1; threshhold += search_step)
     {
         TPR = count_if(probs.begin(), probs.begin() + n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)n_pos;
         if (TPR > TPR_min)
@@ -53,7 +53,7 @@ double StageClassifier::Evaluate(vector<vector<vector<double>>> X, vector<bool> 
     LOG_DEBUG_NN(", Result: " << (double)(TP + TN) / y.size());
     #endif
 
-    for (double threshhold = 0.50015; threshhold >= 0.49980; threshhold -= 0.000001)
+    for (double threshhold = 1; threshhold >= 0; threshhold -= auc_step)
     {
         TPRs.push_back(count_if(probs.begin(), probs.begin() + n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)n_pos);
         FPRs.push_back(count_if(probs.begin() + n_pos, probs.end(), bind2nd(greater_equal<double>(), threshhold)) / (double)n_neg);

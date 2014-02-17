@@ -10,7 +10,8 @@ using std::shared_ptr;
 
 class StageClassifier
 {
-    double threshhold_step = 0.01;
+    double search_step = 0.01;
+    double auc_step = 0.05;
     double TPR_min;
 
 protected:
