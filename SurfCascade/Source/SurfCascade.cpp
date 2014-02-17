@@ -56,20 +56,6 @@ int main(int argc, char *argv[])
         features_all.push_back(features_img);
     }
 
-    //using std::ofstream;
-    //ofstream f("singlefile.txt");
-    //f.precision(3);
-    //for (int j = 0; j < features_all[0].size(); j++)
-    //{
-    //    for (int k = 0; k < features_all[0][0].size(); k++)
-    //    {
-    //        f << features_all[0][j][k] << '\t';
-    //    }
-    //    f << endl;
-    //}
-    //f.close();
-    //return 0;
-
     cout << "Training cascade classifier..." << endl;
     /* train cascade classifier */
     CascadeClassifier cascade_classifier;
