@@ -6,7 +6,6 @@
 using std::count_if;
 using std::bind2nd;
 using std::greater_equal;
-using std::less;
 
 void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
@@ -17,16 +16,16 @@ void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool
 
     /* search min TPR */
     double threshhold;
-    for (threshhold = 0; threshhold <= 1; threshhold += search_step)
+    for (threshhold = 1; threshhold >= 0; threshhold -= search_step)
     {
         TPR = count_if(probs.begin(), probs.begin() + n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)n_pos;
-        if (TPR > TPR_min)
+        if (TPR >= TPR_min)
             break;
     }
 
     /* get corresponding theta and FPR */
     theta = threshhold;
-    FPR = count_if(probs.begin() + n_pos, probs.end(), bind2nd(less<double>(), threshhold)) / (double)n_neg;
+    FPR = count_if(probs.begin() + n_pos, probs.end(), bind2nd(greater_equal<double>(), threshhold)) / (double)n_neg;
 }
 
 double StageClassifier::Evaluate(vector<vector<vector<double>>>& X, vector<bool>& y)
