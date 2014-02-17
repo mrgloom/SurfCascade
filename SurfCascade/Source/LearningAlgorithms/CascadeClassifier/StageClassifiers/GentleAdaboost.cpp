@@ -7,7 +7,7 @@
 using std::count;
 using std::sort;
 
-void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
+void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
     assert(X.size() == y.size());
 
@@ -150,7 +150,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>> X, vector<bool> y)
     }
 }
 
-double GentleAdaboost::Predict(vector<vector<double>> x)
+double GentleAdaboost::Predict(vector<vector<double>>& x)
 {
     double sum = 0, prob;
 

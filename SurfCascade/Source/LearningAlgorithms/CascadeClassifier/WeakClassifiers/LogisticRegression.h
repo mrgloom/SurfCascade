@@ -15,8 +15,8 @@ class LogisticRegression : public WeakClassifier
 
 public:
     LogisticRegression(int patch_index): WeakClassifier(patch_index) {};
-    void Train(vector<vector<double>> X, vector<bool> y);
-    double Predict(vector<double> X);
+    void Train(vector<vector<double>>& X, vector<bool>& y);
+    double Predict(vector<double>& X);
     void Print();
 };
 

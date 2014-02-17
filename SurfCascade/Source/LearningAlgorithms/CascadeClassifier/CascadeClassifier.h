@@ -23,8 +23,8 @@ public:
     double FPR;
     double TPR;
 
-    void Train(vector<vector<vector<double>>> X, vector<bool> y);
-    bool Predict(vector<vector<double>> x);
+    void Train(vector<vector<vector<double>>>& X, vector<bool>& y);
+    bool Predict(vector<vector<double>>& x);
     void Print();
 };
 

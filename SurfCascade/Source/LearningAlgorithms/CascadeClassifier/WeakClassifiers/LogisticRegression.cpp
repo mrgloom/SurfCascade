@@ -22,7 +22,7 @@ double dist(vector<double> v1, vector<double> v2)
     return sqrt(sum);
 }
 
-void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
+void LogisticRegression::Train(vector<vector<double>>& X, vector<bool>& y)
 {
     assert(X.size() == y.size());
 
@@ -55,7 +55,7 @@ void LogisticRegression::Train(vector<vector<double>> X, vector<bool> y)
     LOG_DEBUG("\t\tk = " << k << '/' << max_iters << ", i = " << i << '/' << X.size());
 }
 
-double LogisticRegression::Predict(vector<double> x)
+double LogisticRegression::Predict(vector<double>& x)
 {
     double z = inner_product(theta.begin() + 1, theta.end(), x.begin(), theta[0]);
 

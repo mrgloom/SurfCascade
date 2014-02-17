@@ -8,7 +8,7 @@ using std::bind2nd;
 using std::greater_equal;
 using std::less;
 
-void StageClassifier::SearchTheta(vector<vector<vector<double>>> X, vector<bool> y)
+void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
     vector<double> probs;
 
@@ -29,7 +29,7 @@ void StageClassifier::SearchTheta(vector<vector<vector<double>>> X, vector<bool>
     FPR = count_if(probs.begin() + n_pos, probs.end(), bind2nd(less<double>(), threshhold)) / (double)n_neg;
 }
 
-double StageClassifier::Evaluate(vector<vector<vector<double>>> X, vector<bool> y)
+double StageClassifier::Evaluate(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
     vector<double> probs;
     vector<double> TPRs, FPRs;

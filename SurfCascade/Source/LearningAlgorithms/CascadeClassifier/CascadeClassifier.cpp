@@ -6,7 +6,7 @@
 using std::ostream;
 using std::endl;
 
-void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
+void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
     assert(X.size() == y.size());
 
@@ -67,7 +67,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>> X, vector<bool> y)
     LOG_INFO("\tCascade stages end");
 }
 
-bool CascadeClassifier::Predict(vector<vector<double>> x)
+bool CascadeClassifier::Predict(vector<vector<double>>& x)
 {
     for (int i = 0; i < stage_classifiers.size(); i++)
     {
