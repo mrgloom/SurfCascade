@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Train", "Train\Train.vcxproj", "{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestLogisticRegression", "TestLogisticRegression\TestLogisticRegression.vcxproj", "{A14BCC03-6C65-4393-AA46-C35F429245AA}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Detect", "Detect\Detect.vcxproj", "{57B32FA4-6196-46A3-AC27-BE8C8B7D5887}"
 EndProject
 Global
@@ -29,16 +27,6 @@ Global
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|Win32.ActiveCfg = Release|x64
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|x64.ActiveCfg = Release|x64
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|x64.Build.0 = Release|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Debug|Mixed Platforms.Build.0 = Debug|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Debug|Win32.ActiveCfg = Debug|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Debug|x64.ActiveCfg = Debug|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Debug|x64.Build.0 = Debug|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Release|Mixed Platforms.ActiveCfg = Release|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Release|Mixed Platforms.Build.0 = Release|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Release|Win32.ActiveCfg = Release|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Release|x64.ActiveCfg = Release|x64
-		{A14BCC03-6C65-4393-AA46-C35F429245AA}.Release|x64.Build.0 = Release|x64
 		{57B32FA4-6196-46A3-AC27-BE8C8B7D5887}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
 		{57B32FA4-6196-46A3-AC27-BE8C8B7D5887}.Debug|Mixed Platforms.Build.0 = Debug|x64
 		{57B32FA4-6196-46A3-AC27-BE8C8B7D5887}.Debug|Win32.ActiveCfg = Debug|x64
