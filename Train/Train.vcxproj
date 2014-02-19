@@ -15,33 +15,29 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\FeatureExtractors\DenseSURFFeatureExtractor.cpp" />
-    <ClCompile Include="Source\FeatureExtractors\FeatureExtractor.cpp" />
-    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp" />
-    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp" />
-    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
-    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
-    <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
-    <ClCompile Include="Source\Detect.cpp" />
-    <ClCompile Include="Source\Train.cpp" />
+    <ClCompile Include="FeatureExtractors\DenseSURFFeatureExtractor.cpp" />
+    <ClCompile Include="FeatureExtractors\FeatureExtractor.cpp" />
+    <ClCompile Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp" />
+    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp" />
+    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
+    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
+    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
+    <ClCompile Include="Train.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\FeatureExtractors\DenseSURFFeatureExtractor.h" />
-    <ClInclude Include="Source\FeatureExtractors\FeatureExtractor.h" />
-    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\CascadeClassifier.h" />
-    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h" />
-    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h" />
-    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
-    <ClInclude Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h" />
-    <ClInclude Include="Source\LOG.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="OpenCV_Debug.props" />
-    <None Include="OpenCV_Release.props" />
+    <ClInclude Include="FeatureExtractors\DenseSURFFeatureExtractor.h" />
+    <ClInclude Include="FeatureExtractors\FeatureExtractor.h" />
+    <ClInclude Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.h" />
+    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h" />
+    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h" />
+    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
+    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h" />
+    <ClInclude Include="LOG.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}</ProjectGuid>
-    <RootNamespace>SurfCascade</RootNamespace>
+    <RootNamespace>Train</RootNamespace>
+    <ProjectName>Train</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -62,11 +58,11 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="OpenCV_Debug.props" />
+    <Import Project="..\OpenCV_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="OpenCV_Release.props" />
+    <Import Project="..\OpenCV_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -75,7 +71,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)\SurfCascade\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -89,6 +85,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
