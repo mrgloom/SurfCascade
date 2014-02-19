@@ -20,11 +20,10 @@ DenseSURFFeatureExtractor::~DenseSURFFeatureExtractor()
 {
 }
 
-void DenseSURFFeatureExtractor::ExtractFeatures(string filename, vector<vector<double>>& features_img)
+void DenseSURFFeatureExtractor::IntegralImage(string filename, Mat sums[])
 {
     Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
 
-    Mat sums[n_bins];
     Mat img_padded;
     Mat img_filtered(win_size.height, win_size.width, CV_8UC1);
 
@@ -36,7 +35,10 @@ void DenseSURFFeatureExtractor::ExtractFeatures(string filename, vector<vector<d
         sums[bin].create(win_size.height + 1, win_size.width + 1, CV_32SC1);
         integral(img_filtered, sums[bin]);
     }
+}
 
+void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], vector<vector<double>>& features_win)
+{
     /* compute features */
     Rect rects[n_cells];
 
@@ -49,7 +51,7 @@ void DenseSURFFeatureExtractor::ExtractFeatures(string filename, vector<vector<d
                 GetFeatureRects(x, y, shape, cell_edge, rects);
                 vector<double> feature;
                 CalcFeatureValue(sums, rects, feature);
-                features_img.push_back(feature);
+                features_win.push_back(feature);
             }
         }
     }

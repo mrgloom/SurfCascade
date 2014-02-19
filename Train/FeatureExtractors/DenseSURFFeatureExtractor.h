@@ -16,7 +16,6 @@ using std::vector;
 class DenseSURFFeatureExtractor : public FeatureExtractor
 {
     static const Size shapes[3];
-    static const int n_bins = 8;
     static const int n_cells = 4;
     static const int step = 2;
     static const int min_cell_edge = 3;
@@ -27,10 +26,12 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     void Normalization(vector<double>& feature);
 
 public:
+    static const int n_bins = 8;
     static const int dim = n_bins * n_cells;
 
     ~DenseSURFFeatureExtractor();
-    void ExtractFeatures(string filename, vector<vector<double>>& features_img);
+    void IntegralImage(string filename, Mat sums[]);
+    void ExtractFeatures(const Mat sums[], vector<vector<double>>& features_win);
 };
 
 #endif

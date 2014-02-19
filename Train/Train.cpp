@@ -51,8 +51,10 @@ int main(int argc, char *argv[])
     cout << "Extracting features..." << endl;
     for (int i = 0; i < filepaths.size(); i++)
     {
+        Mat sums[DenseSURFFeatureExtractor::n_bins];
         vector<vector<double>> features_img;
-        dense_surf_feature_extractor.ExtractFeatures(filepaths[i], features_img);
+        dense_surf_feature_extractor.IntegralImage(filepaths[i], sums);
+        dense_surf_feature_extractor.ExtractFeatures(sums, features_img);
         features_all.push_back(features_img);
     }
 
