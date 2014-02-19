@@ -1,1 +1,1 @@
-#include "WeakClassifier.h"
+#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"

@@ -1,7 +1,7 @@
 #ifndef STAGECLASSIFIER_H
 #define STAGECLASSIFIER_H
 
-#include "../WeakClassifiers/WeakClassifier.h"
+#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
 #include <vector>
 #include <memory>
 

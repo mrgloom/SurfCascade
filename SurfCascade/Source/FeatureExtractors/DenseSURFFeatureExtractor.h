@@ -1,7 +1,7 @@
 #ifndef DENSESURFFEATUREEXTRACTOR_H
 #define DENSESURFFEATUREEXTRACTOR_H
 
-#include "FeatureExtractor.h"
+#include "FeatureExtractors/FeatureExtractor.h"
 #include <opencv2/opencv.hpp>
 #include <array>
 #include <vector>

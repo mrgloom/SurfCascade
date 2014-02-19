@@ -1,7 +1,7 @@
 #ifndef LOGISTICREGRESSION_H
 #define LOGISTICREGRESSION_H
 
-#include "WeakClassifier.h"
+#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
 #include <vector>
 
 using std::vector;

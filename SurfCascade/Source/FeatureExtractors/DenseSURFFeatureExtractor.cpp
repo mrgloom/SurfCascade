@@ -1,4 +1,4 @@
-#include "DenseSURFFeatureExtractor.h"
+#include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include <vector>
 #include <string>
 #include <array>

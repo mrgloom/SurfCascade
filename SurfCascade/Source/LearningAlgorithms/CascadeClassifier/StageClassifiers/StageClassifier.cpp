@@ -1,5 +1,5 @@
-#include "StageClassifier.h"
-#include "../../../LOG.h"
+#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/StageClassifier.h"
+#include "LOG.h"
 #include <functional>
 #include <algorithm>
 

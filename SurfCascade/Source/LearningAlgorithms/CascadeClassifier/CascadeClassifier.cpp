@@ -1,6 +1,6 @@
-#include "CascadeClassifier.h"
-#include "StageClassifiers/GentleAdaboost.h"
-#include "../../LOG.h"
+#include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
+#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
+#include "LOG.h"
 #include <cassert>
 
 using std::ostream;

@@ -1,6 +1,6 @@
-#include "GentleAdaboost.h"
-#include "../WeakClassifiers/LogisticRegression.h"
-#include "../../../LOG.h"
+#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
+#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/LogisticRegression.h"
+#include "LOG.h"
 #include <algorithm>
 #include <cassert>
 
