@@ -31,7 +31,7 @@ public:
 
     ~DenseSURFFeatureExtractor();
     void IntegralImage(string filename, Mat sums[]);
-    void ExtractFeatures(const Mat sums[], vector<vector<double>>& features_win);
+    void ExtractFeatures(const Mat sums[], const Rect& win, vector<vector<double>>& features_win);
 };
 
 #endif

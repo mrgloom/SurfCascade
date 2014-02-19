@@ -28,8 +28,8 @@ int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
 
 int main(int argc, char *argv[])
 {
-    string pos_folder = "D:/facedata/train/face/";
-    string neg_folder = "D:/facedata/train/non-face/";
+    string pos_folder = "D:/facedata/train1/face/";
+    string neg_folder = "D:/facedata/train1/non-face/";
     string wildcard = string("*.pgm");
 
     /* get file names and labels */
@@ -54,7 +54,8 @@ int main(int argc, char *argv[])
         Mat sums[DenseSURFFeatureExtractor::n_bins];
         vector<vector<double>> features_img;
         dense_surf_feature_extractor.IntegralImage(filepaths[i], sums);
-        dense_surf_feature_extractor.ExtractFeatures(sums, features_img);
+        Rect win(0, 0, sums[0].cols - 1, sums[0].rows - 1);
+        dense_surf_feature_extractor.ExtractFeatures(sums, win, features_img);
         features_all.push_back(features_img);
     }
 

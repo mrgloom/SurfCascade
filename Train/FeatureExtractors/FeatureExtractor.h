@@ -7,9 +7,6 @@ using cv::Size;
 
 class FeatureExtractor
 {
-protected:
-    static const Size win_size;
-
 public:
     virtual ~FeatureExtractor();
 };

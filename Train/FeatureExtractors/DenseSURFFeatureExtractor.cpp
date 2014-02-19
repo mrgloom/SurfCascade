@@ -25,19 +25,19 @@ void DenseSURFFeatureExtractor::IntegralImage(string filename, Mat sums[])
     Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
 
     Mat img_padded;
-    Mat img_filtered(win_size.height, win_size.width, CV_8UC1);
+    Mat img_filtered(img.rows, img.cols, CV_8UC1);
 
     /* calculate integral image */
     copyMakeBorder(img, img_padded, 1, 1, 1, 1, cv::BORDER_REPLICATE);
 
     for (int bin = 0; bin < n_bins; bin++) {
         T2bFilter(img_padded, img_filtered, bin);
-        sums[bin].create(win_size.height + 1, win_size.width + 1, CV_32SC1);
+        sums[bin].create(img.rows + 1, img.cols + 1, CV_32SC1);
         integral(img_filtered, sums[bin]);
     }
 }
 
-void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], vector<vector<double>>& features_win)
+void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], const Rect& win, vector<vector<double>>& features_win)
 {
     /* compute features */
     Rect rects[n_cells];
@@ -45,9 +45,9 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], vector<vector<
     for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++) {
         Size shape = shapes[j];
 
-        for (int cell_edge = min_cell_edge; cell_edge <= win_size.width / 2; cell_edge++) {
-            for (int y = 0; y + shape.height * cell_edge <= win_size.height; y += step)
-            for (int x = 0; x + shape.width * cell_edge <= win_size.width; x += step) {
+        for (int cell_edge = min_cell_edge; cell_edge <= win.width / 2; cell_edge++) {
+            for (int y = win.y; y + shape.height * cell_edge <= win.y + win.height; y += step)
+            for (int x = win.x; x + shape.width * cell_edge <= win.x + win.width; x += step) {
                 GetFeatureRects(x, y, shape, cell_edge, rects);
                 vector<double> feature;
                 CalcFeatureValue(sums, rects, feature);
@@ -60,8 +60,8 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], vector<vector<
 void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin)
 {
     int d;
-    for (int y = 1; y < win_size.height + 1; y++) {
-        for (int x = 1; x < win_size.width + 1; x++) {
+    for (int y = 1; y < img_filtered.rows + 1; y++) {
+        for (int x = 1; x < img_filtered.cols + 1; x++) {
             switch (bin) {
                 /*
                 * 0: |dx| - dx
