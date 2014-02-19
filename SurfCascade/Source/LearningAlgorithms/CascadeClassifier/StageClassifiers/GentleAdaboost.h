@@ -9,8 +9,7 @@ using std::vector;
 class GentleAdaboost : public StageClassifier
 {
     double total_AUC_score = 0;
-    //int sample_num = 30 * 32;
-    int sample_num = 50;
+    int sample_num = 50; // 30 * 32
     int max_iters = 100;
     vector<shared_ptr<WeakClassifier>> weak_classifiers;
 
