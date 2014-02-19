@@ -32,7 +32,10 @@
     <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\SurfCascade.cpp">
+    <ClCompile Include="Source\Train.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Detect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

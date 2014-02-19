@@ -22,7 +22,8 @@
     <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
     <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
     <ClCompile Include="Source\LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
-    <ClCompile Include="Source\SurfCascade.cpp" />
+    <ClCompile Include="Source\Detect.cpp" />
+    <ClCompile Include="Source\Train.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\FeatureExtractors\DenseSURFFeatureExtractor.h" />

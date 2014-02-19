@@ -28,8 +28,8 @@ int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
 
 int main(int argc, char *argv[])
 {
-    string pos_folder = "D:/facedata/train1/face/";
-    string neg_folder = "D:/facedata/train1/non-face/";
+    string pos_folder = "D:/facedata/train/face/";
+    string neg_folder = "D:/facedata/train/non-face/";
     string wildcard = string("*.pgm");
 
     /* get file names and labels */
