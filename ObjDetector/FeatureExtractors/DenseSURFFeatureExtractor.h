@@ -21,8 +21,8 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const int min_cell_edge = 3;
 
     void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
-    void GetFeatureRects(int x, int y, Size shape, int cell_edge, Rect rects[]);
-    void CalcFeatureValue(const Mat sums[], Rect rects[], vector<double>& feature);
+    void GetPatch(int x, int y, Size shape, int cell_edge, Rect& patch);
+    void CalcFeature(const Mat sums[], Rect patch, vector<double>& feature);
     void Normalization(vector<double>& feature);
 
 public:
@@ -31,7 +31,8 @@ public:
 
     ~DenseSURFFeatureExtractor();
     void IntegralImage(string filename, Mat sums[]);
-    void ExtractFeatures(const Mat sums[], const Rect& win, vector<vector<double>>& features_win);
+    void ExtractPatches(Rect win, vector<Rect>& patches);
+    void ExtractFeatures(const Mat sums[], const vector<Rect>& patches, vector<vector<double>>& features_win);
 };
 
 #endif

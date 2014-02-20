@@ -37,10 +37,9 @@ void DenseSURFFeatureExtractor::IntegralImage(string filename, Mat sums[])
     }
 }
 
-void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], const Rect& win, vector<vector<double>>& features_win)
+void DenseSURFFeatureExtractor::ExtractPatches(Rect win, vector<Rect>& patches)
 {
-    /* compute features */
-    Rect rects[n_cells];
+    Rect patch;
 
     for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++) {
         Size shape = shapes[j];
@@ -48,12 +47,22 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], const Rect& wi
         for (int cell_edge = min_cell_edge; cell_edge <= win.width / 2; cell_edge++) {
             for (int y = win.y; y + shape.height * cell_edge <= win.y + win.height; y += step)
             for (int x = win.x; x + shape.width * cell_edge <= win.x + win.width; x += step) {
-                GetFeatureRects(x, y, shape, cell_edge, rects);
-                vector<double> feature;
-                CalcFeatureValue(sums, rects, feature);
-                features_win.push_back(feature);
+                GetPatch(x, y, shape, cell_edge, patch);
+                patches.push_back(patch);
             }
         }
+    }
+}
+
+void DenseSURFFeatureExtractor::ExtractFeatures(const Mat sums[], const vector<Rect>& patches, vector<vector<double>>& features_win)
+{
+    /* compute features */
+    vector<double> feature;
+
+    for (int i = 0; i < patches.size(); i++)
+    {
+        CalcFeature(sums, patches[i], feature);
+        features_win.push_back(feature);
     }
 }
 
@@ -95,16 +104,28 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filter
     }
 }
 
-void DenseSURFFeatureExtractor::GetFeatureRects(int x, int y, Size shape, int cell_edge, Rect rects[])
+void DenseSURFFeatureExtractor::GetPatch(int x, int y, Size shape, int cell_edge, Rect& patch)
 {
-    for (int h = 0; h < shape.height; h++)
-    for (int w = 0; w < shape.width; w++) {
-        rects[h * shape.width + w] = Rect(x + w * cell_edge, y + h * cell_edge, cell_edge, cell_edge);
-    }
+    patch.x = x;
+    patch.y = y;
+    patch.width = shape.width * cell_edge;
+    patch.height = shape.height * cell_edge;
 }
 
-void DenseSURFFeatureExtractor::CalcFeatureValue(const Mat sums[], Rect rects[], vector<double>& feature)
+void DenseSURFFeatureExtractor::CalcFeature(const Mat sums[], Rect patch, vector<double>& feature)
 {
+    /* get separated blocks from patch */
+    Rect rects[n_cells];
+    int cell_edge = patch.width < patch.height ? patch.width : patch.height;
+    Size shape;
+    shape.width = patch.width / cell_edge;
+    shape.height = patch.height / cell_edge;
+
+    for (int h = 0; h < shape.height; h++)
+    for (int w = 0; w < shape.width; w++) {
+        rects[h * shape.width + w] = Rect(patch.x + w * cell_edge, patch.y + h * cell_edge, cell_edge, cell_edge);
+    }
+
     /* calculate feature value using integral image*/
     int s0, s1, s2, s3, s;
 

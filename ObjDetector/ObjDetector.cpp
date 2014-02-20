@@ -44,18 +44,25 @@ int main(int argc, char *argv[])
     vector<bool> neg_labels(n, false);
     labels.insert(labels.end(), neg_labels.begin(), neg_labels.end());
 
-    /* extract features */
+    /* extract patches */
     DenseSURFFeatureExtractor dense_surf_feature_extractor;
+    vector<Rect> patches;
+
+    cout << "Extracting patches..." << endl;
+    Mat img = cv::imread(filepaths[0], cv::IMREAD_GRAYSCALE);
+    Rect win(0, 0, img.cols, img.rows);
+    dense_surf_feature_extractor.ExtractPatches(win, patches);
+
+    /* extract features */
     vector<vector<vector<double>>> features_all;
+    Mat sums[DenseSURFFeatureExtractor::n_bins];
 
     cout << "Extracting features..." << endl;
     for (int i = 0; i < filepaths.size(); i++)
     {
-        Mat sums[DenseSURFFeatureExtractor::n_bins];
         vector<vector<double>> features_img;
         dense_surf_feature_extractor.IntegralImage(filepaths[i], sums);
-        Rect win(0, 0, sums[0].cols - 1, sums[0].rows - 1);
-        dense_surf_feature_extractor.ExtractFeatures(sums, win, features_img);
+        dense_surf_feature_extractor.ExtractFeatures(sums, patches, features_img);
         features_all.push_back(features_img);
     }
 
@@ -70,32 +77,34 @@ int main(int argc, char *argv[])
 
 
 
-    string filepath = "D:/facedata/test.jpg";
+    //string filepath = "D:/Downloads/emily.jpg";
 
-    /* calculate integral image */
-    Mat sums[DenseSURFFeatureExtractor::n_bins];
+    ///* calculate integral image */
+    //Mat sums[DenseSURFFeatureExtractor::n_bins];
 
-    dense_surf_feature_extractor.IntegralImage(filepath, sums);
+    //DenseSURFFeatureExtractor dense_surf_feature_extractor;
+    //dense_surf_feature_extractor.IntegralImage(filepath, sums);
 
-    Size img_size(sums[0].cols - 1, sums[0].rows - 1);
+    //Size img_size(sums[0].cols - 1, sums[0].rows - 1);
 
-    /* scan with variant windows */
-    CascadeClassifier cascade_classifier;
-    // TODO: read trained classifier
+    ///* scan with variant windows */
+    ////CascadeClassifier cascade_classifier;
+    //// TODO: read trained classifier
 
-    for (Rect win(0, 0, 10, 10); win.width <= img_size.width && win.height <= img_size.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
-    {
-        for (win.y = 0; win.y + win.height <= img_size.height; win.y += 2)
-            for (win.x = 0; win.x + win.width <= img_size.width; win.x += 2)
-            {
-                vector<vector<double>> features_win;
+    ////for (Rect win(0, 0, 10, 10); win.width <= img_size.width && win.height <= img_size.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+    //for (Rect win(0, 0, 10, 10); win.width <= 11 && win.height <= 11; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+    //{
+    //    for (win.y = 0; win.y + win.height <= img_size.height; win.y += 2)
+    //        for (win.x = 0; win.x + win.width <= img_size.width; win.x += 2)
+    //        {
+    //            vector<vector<double>> features_win;
 
-                dense_surf_feature_extractor.ExtractFeatures(sums, win, features_win);
-                //cascade_classifier.Predict(features_win);
-
-                cout << win;
-            }
-    }
+    //            dense_surf_feature_extractor.ExtractFeatures(sums, win, features_win);
+    //            //if (cascade_classifier.Predict(features_win))
+    //            //cout << win << endl;
+    //        }
+    //    cout << win << endl;
+    //}
 
 
 
