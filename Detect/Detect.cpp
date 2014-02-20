@@ -11,26 +11,33 @@ using std::array;
 
 int main(int argc, char *argv[])
 {
-    string filepath = "";
+    string filepath = "D:/facedata/test.jpg";
 
-    /* extract features */
+    /* calculate integral image */
     DenseSURFFeatureExtractor dense_surf_feature_extractor;
-    vector<vector<double>> features;
+    Mat sums[DenseSURFFeatureExtractor::n_bins];
 
-    cout << "Extracting features..." << endl;
-    for (int i = 0; i < filepaths.size(); i++)
-    {
-        vector<vector<double>> features_img;
-        dense_surf_feature_extractor.ExtractFeatures(filepaths[i], features_img);
-        features_all.push_back(features_img);
-    }
+    dense_surf_feature_extractor.IntegralImage(filepath, sums);
 
-    cout << "Detecting..." << endl;
+    Size img_size(sums[0].cols - 1, sums[0].rows - 1);
+
+    /* scan with variant windows */
     CascadeClassifier cascade_classifier;
-    cascade_classifier.Train(features_all, labels);
-    cascade_classifier.Print();
+    // TODO: read trained classifier
 
-    cout << "Done." << endl;
+    for (Rect win(0, 0, 10, 10); win.width <= img_size.width && win.height <= img_size.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+    {
+        for (win.y = 0; win.y + win.height <= img_size.height; win.y+=2)
+            for (win.x = 0; win.x + win.width <= img_size.width; win.x+=2)
+            {
+                vector<vector<double>> features_win;
+
+                dense_surf_feature_extractor.ExtractFeatures(sums, win, features_win);
+                //cascade_classifier.Predict(features_win);
+
+                cout << win;
+            }
+    }
 
     return 0;
 }
