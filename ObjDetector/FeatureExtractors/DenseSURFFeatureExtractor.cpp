@@ -113,10 +113,10 @@ void DenseSURFFeatureExtractor::CalcFeatureValue(const Mat sums[], Rect rects[],
     for (int i = 0; i < n_cells; i++) {
         for (int j = 0; j < n_bins; j++) {
             Mat sum = sums[j];
-            s0 = sum.at<int>(rects[i].x, rects[i].y);
-            s1 = sum.at<int>(rects[i].x + rects[i].width, rects[i].y);
-            s2 = sum.at<int>(rects[i].x, rects[i].y + rects[i].height);
-            s3 = sum.at<int>(rects[i].x + rects[i].width, rects[i].y + rects[i].height);
+            s0 = sum.at<int>(rects[i].y, rects[i].x);
+            s1 = sum.at<int>(rects[i].y, rects[i].x + rects[i].width);
+            s2 = sum.at<int>(rects[i].y + rects[i].height, rects[i].x);
+            s3 = sum.at<int>(rects[i].y + rects[i].height, rects[i].x + rects[i].width);
             s = s3 - s2 - s1 + s0;
             feature[i * n_bins + j] = s;
         }
