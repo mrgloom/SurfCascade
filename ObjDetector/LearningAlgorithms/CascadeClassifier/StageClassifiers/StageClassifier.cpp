@@ -9,6 +9,10 @@ using std::greater_equal;
 
 void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool>& y)
 {
+    int whole_n_total = (int)y.size();
+    int whole_n_pos = (int)count(y.begin(), y.end(), true);
+    int whole_n_neg = (int)(whole_n_total - whole_n_pos);
+
     vector<double> probs;
 
     for (int i = 0; i < X.size(); i++)
@@ -18,14 +22,14 @@ void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool
     double threshhold;
     for (threshhold = 1; threshhold >= 0; threshhold -= search_step)
     {
-        TPR = count_if(probs.begin(), probs.begin() + n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)n_pos;
+        TPR = count_if(probs.begin(), probs.begin() + whole_n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)whole_n_pos;
         if (TPR >= TPR_min)
             break;
     }
 
     /* get corresponding theta and FPR */
     theta = threshhold;
-    FPR = count_if(probs.begin() + n_pos, probs.end(), bind2nd(greater_equal<double>(), threshhold)) / (double)n_neg;
+    FPR = count_if(probs.begin() + whole_n_pos, probs.end(), bind2nd(greater_equal<double>(), threshhold)) / (double)whole_n_neg;
 }
 
 double StageClassifier::Evaluate(vector<vector<vector<double>>>& X, vector<bool>& y)
