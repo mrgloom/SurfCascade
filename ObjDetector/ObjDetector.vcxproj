@@ -22,7 +22,7 @@
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
-    <ClCompile Include="Train.cpp" />
+    <ClCompile Include="ObjDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FeatureExtractors\DenseSURFFeatureExtractor.h" />
@@ -36,8 +36,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}</ProjectGuid>
-    <RootNamespace>Train</RootNamespace>
-    <ProjectName>Train</ProjectName>
+    <RootNamespace>ObjDetector</RootNamespace>
+    <ProjectName>ObjDetector</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
