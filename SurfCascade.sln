@@ -5,6 +5,8 @@ VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjDetector", "ObjDetector\ObjDetector.vcxproj", "{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconfig++", "D:\Libs\libconfig-1.4.9\lib\libconfig++.vcxproj", "{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -25,6 +27,16 @@ Global
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|Win32.ActiveCfg = Release|x64
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|x64.ActiveCfg = Release|x64
 		{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}.Release|x64.Build.0 = Release|x64
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Debug|Win32.Build.0 = Debug|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Debug|x64.ActiveCfg = Debug|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|Win32.ActiveCfg = Release|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|Win32.Build.0 = Release|Win32
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
