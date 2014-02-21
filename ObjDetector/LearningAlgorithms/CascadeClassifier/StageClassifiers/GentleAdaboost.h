@@ -17,6 +17,8 @@ public:
     GentleAdaboost(double TPR_min_perstage): StageClassifier(TPR_min_perstage) {}
     void Train(vector<vector<vector<double>>>& X, vector<bool>& y);
     double Predict(vector<vector<double>>& x);
+    double Predict2(vector<vector<double>>& x);
+    void GetFittedPatchIndexes(vector<int>& patch_indexes);
 };
 
 #endif

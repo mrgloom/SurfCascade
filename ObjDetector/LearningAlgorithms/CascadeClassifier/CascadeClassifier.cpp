@@ -15,7 +15,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
     int n_pos = (int)count(y.begin(), y.end(), true);
     int n_neg = (int)(n_total - n_pos);
 
-    assert(n_pos < n_neg);
+    assert(n_pos <= n_neg);
 
     vector<vector<vector<double>>> samples_X(X.begin(), X.begin() + 2 * n_pos);
     vector<bool> samples_y(y.begin(), y.begin() + samples_X.size());
@@ -77,6 +77,27 @@ bool CascadeClassifier::Predict(vector<vector<double>>& x)
     }
 
     return true;
+}
+
+bool CascadeClassifier::Predict2(vector<vector<vector<double>>>& x)
+{
+    for (int i = 0; i < stage_classifiers.size(); i++)
+    {
+        if (stage_classifiers[i]->Predict2(x[i]) < stage_classifiers[i]->theta)
+            return false;
+    }
+
+    return true;
+}
+
+void CascadeClassifier::GetFittedPatchIndexes(vector<vector<int>>& patch_indexes)
+{
+    for (int i = 0; i < stage_classifiers.size(); i++)
+    {
+        vector<int> patch_indexes_perstage;
+        stage_classifiers[i]->GetFittedPatchIndexes(patch_indexes_perstage);
+        patch_indexes.push_back(patch_indexes_perstage);
+    }
 }
 
 void CascadeClassifier::Print()

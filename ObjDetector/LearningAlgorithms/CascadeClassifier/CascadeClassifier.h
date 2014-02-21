@@ -25,6 +25,8 @@ public:
 
     void Train(vector<vector<vector<double>>>& X, vector<bool>& y);
     bool Predict(vector<vector<double>>& x);
+    bool Predict2(vector<vector<vector<double>>>& x);
+    void GetFittedPatchIndexes(vector<vector<int>>& patch_indexes);
     void Print();
 };
 

@@ -162,3 +162,23 @@ double GentleAdaboost::Predict(vector<vector<double>>& x)
 
     return prob;
 }
+
+double GentleAdaboost::Predict2(vector<vector<double>>& x)
+{
+    double sum = 0, prob;
+
+    for (int i = 0; i < weak_classifiers.size(); i++)
+    {
+        sum += weak_classifiers[i]->Predict(x[i]);
+    }
+
+    prob = sum / weak_classifiers.size();
+
+    return prob;
+}
+
+void GentleAdaboost::GetFittedPatchIndexes(vector<int>& patch_indexes)
+{
+    for (int i = 0; i < weak_classifiers.size(); i++)
+        patch_indexes.push_back(weak_classifiers[i]->patch_index);
+}
