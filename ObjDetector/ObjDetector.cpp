@@ -1,6 +1,7 @@
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LOG.h"
+#include "libconfig.h++"
 #include <windows.h>
 #include <vector>
 #include <array>
