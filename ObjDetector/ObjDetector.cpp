@@ -10,21 +10,20 @@ using std::string;
 using std::array;
 
 int get_filepaths(string folder, string wildcard, vector<string>& filepaths);
-void resize_patches(Size size1, Size size2, vector<vector<Rect>>& patches);
 
 int main(int argc, char *argv[])
 {
-    //if (argc != 2)
-    //{
-    //    cout << "Usage: ObjDetector [--train|--detect]" << endl;
-    //    return 0;
-    //}
+    if (argc != 2)
+    {
+        cout << "Usage: ObjDetector [--train|--detect]" << endl;
+        return 0;
+    }
     CascadeClassifier cascade_classifier;
 
     /************************************************************************/
     /*                             Train Mode                               */
     /************************************************************************/
-    //if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
+    if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
         string pos_folder = "D:/facedata/train1/face/";
         string neg_folder = "D:/facedata/train1/non-face/";
@@ -76,7 +75,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     /*                             Detect Mode                              */
     /************************************************************************/
-    //else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
+    else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
         string filepath = "D:/Downloads/emily.jpg";
 
@@ -117,7 +116,7 @@ int main(int argc, char *argv[])
             for (win.y = 0; win.y + win.height <= img.height; win.y += 2)
                 for (win.x = 0; win.x + win.width <= img.width; win.x += 2)
                 {
-                    resize_patches(Size(19, 19), win.size(), patches);
+                    dense_surf_feature_extractor.resize_patches(Size(19, 19), win.size(), patches);
 
                     vector<vector<vector<double>>> features_win;
 
@@ -152,21 +151,4 @@ int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
     FindClose(hFind);
 
     return i;
-}
-
-void resize_patches(Size size1, Size size2, vector<vector<Rect>>& patches)
-{
-    double scale = (double)size2.width / size1.width; // both square
-
-    for (int i = 0; i < patches.size(); i++)
-    {
-        for (int j = 0; j < patches[0].size(); j++)
-        {
-            double ratio = (double)patches[i][j].width / patches[i][j].height;
-            patches[i][j].x = (int)(patches[i][j].x * scale);
-            patches[i][j].y = (int)(patches[i][j].y * scale);
-            patches[i][j].height = (int)(patches[i][j].height * scale);
-            patches[i][j].width = (int)(patches[i][j].height * ratio);
-        }
-    }
 }

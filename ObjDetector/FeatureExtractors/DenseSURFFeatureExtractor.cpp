@@ -165,3 +165,20 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
     for (int i = 0; i < feature.size(); i++)
         feature[i] /= norm;
 }
+
+void DenseSURFFeatureExtractor::resize_patches(Size size1, Size size2, vector<vector<Rect>>& patches)
+{
+    double scale = (double)size2.width / size1.width; // both square
+
+    for (int i = 0; i < patches.size(); i++)
+    {
+        for (int j = 0; j < patches[0].size(); j++)
+        {
+            double ratio = (double)patches[i][j].width / patches[i][j].height;
+            patches[i][j].x = (int)(patches[i][j].x * scale);
+            patches[i][j].y = (int)(patches[i][j].y * scale);
+            patches[i][j].height = (int)(patches[i][j].height * scale);
+            patches[i][j].width = (int)(patches[i][j].height * ratio);
+        }
+    }
+}

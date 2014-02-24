@@ -33,6 +33,7 @@ public:
     void IntegralImage(string filename, Mat sums[]);
     void ExtractPatches(Rect win, vector<Rect>& patches);
     void ExtractFeatures(const Mat sums[], const vector<Rect>& patches, vector<vector<double>>& features_win);
+    void resize_patches(Size size1, Size size2, vector<vector<Rect>>& patches);
 };
 
 #endif
