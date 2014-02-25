@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/Downloads/emily.jpg";
+        string filepath = "D:/facedata/emily.jpg";
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
         /* get fitted patches */
         CascadeClassifier cascade_classifier;
-        //model.Load(cascade_classifier);
+        model.Load(cascade_classifier);
 
         vector<vector<int>> patch_indexes;
         vector<vector<Rect>> patches;

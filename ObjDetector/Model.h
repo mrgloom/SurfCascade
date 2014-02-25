@@ -14,7 +14,8 @@ public:
 
     Model(string model_cfg) : model_cfg(model_cfg) {};
     ~Model();
-    void Save(CascadeClassifier& cascade_classifier);
+    int Save(CascadeClassifier& cascade_classifier);
+    int Load(CascadeClassifier& cascade_classifier);
     //void Load(CascadeClassifier& cascade_classifier);
 };
 
