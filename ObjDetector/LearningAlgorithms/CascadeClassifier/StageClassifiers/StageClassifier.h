@@ -2,6 +2,7 @@
 #define STAGECLASSIFIER_H
 
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
+#include "Model.h"
 #include <vector>
 #include <memory>
 
@@ -31,6 +32,7 @@ public:
     virtual void GetFittedPatchIndexes(vector<int>& patch_indexes) = 0;
     double Evaluate(vector<vector<vector<double>>>& X, vector<bool>& y);
     void SearchTheta(vector<vector<vector<double>>>& X, vector<bool>& y);
+    friend class Model;
 };
 
 #endif

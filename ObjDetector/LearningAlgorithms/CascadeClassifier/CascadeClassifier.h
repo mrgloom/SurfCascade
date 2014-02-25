@@ -3,6 +3,7 @@
 
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/StageClassifier.h"
+#include "Model.h"
 #include <vector>
 #include <array>
 #include <memory>
@@ -28,6 +29,7 @@ public:
     bool Predict2(vector<vector<vector<double>>>& x);
     void GetFittedPatchIndexes(vector<vector<int>>& patch_indexes);
     void Print();
+    friend class Model;
 };
 
 #endif

@@ -22,6 +22,7 @@
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,6 +34,7 @@
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h" />
     <ClInclude Include="LOG.h" />
+    <ClInclude Include="Model.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}</ProjectGuid>
@@ -71,11 +73,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)/libconfig;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -92,6 +96,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

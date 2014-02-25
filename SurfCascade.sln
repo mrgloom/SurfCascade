@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 12.0.30110.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjDetector", "ObjDetector\ObjDetector.vcxproj", "{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE} = {A0C36CE7-D908-4573-8B69-249EEEB7D2BE}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconfig++", "libconfig\libconfig++.vcxproj", "{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}"
 EndProject

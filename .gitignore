@@ -156,3 +156,4 @@ $RECYCLE.BIN/
 .DS_Store
 *.dgml
 /daily_commit.bat
+/ObjDetector/model.cfg

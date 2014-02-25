@@ -2,6 +2,7 @@
 #define GENTLEADABOOST_H
 
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/StageClassifier.h"
+#include "Model.h"
 #include <vector>
 
 using std::vector;
@@ -19,6 +20,7 @@ public:
     double Predict(vector<vector<double>>& x);
     double Predict2(vector<vector<double>>& x);
     void GetFittedPatchIndexes(vector<int>& patch_indexes);
+    friend class Model;
 };
 
 #endif

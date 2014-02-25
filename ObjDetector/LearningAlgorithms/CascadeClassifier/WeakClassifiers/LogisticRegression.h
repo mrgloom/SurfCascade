@@ -2,6 +2,7 @@
 #define LOGISTICREGRESSION_H
 
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
+#include "Model.h"
 #include <vector>
 
 using std::vector;
@@ -18,6 +19,7 @@ public:
     void Train(vector<vector<double>>& X, vector<bool>& y);
     double Predict(vector<double>& X);
     void Print();
+    friend class Model;
 };
 
 #endif

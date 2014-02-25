@@ -37,9 +37,6 @@
     <ClInclude Include="libconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="libconfig.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="parsectx.h">
       <Filter>Header Files</Filter>
     </ClInclude>

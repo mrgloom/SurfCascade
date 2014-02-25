@@ -1,7 +1,7 @@
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LOG.h"
-#include "libconfig.h++"
+#include "Model.h"
 #include <windows.h>
 #include <vector>
 #include <array>
@@ -19,7 +19,8 @@ int main(int argc, char *argv[])
         cout << "Usage: ObjDetector [--train|--detect]" << endl;
         return 0;
     }
-    CascadeClassifier cascade_classifier;
+
+    Model model("model.cfg");
 
     /************************************************************************/
     /*                             Train Mode                               */
@@ -64,11 +65,14 @@ int main(int argc, char *argv[])
             features_all.push_back(features_img);
         }
 
-        cout << "Training cascade classifier..." << endl;
         /* train cascade classifier */
-        //CascadeClassifier cascade_classifier;
+        cout << "Training cascade classifier..." << endl;
+        CascadeClassifier cascade_classifier;
         cascade_classifier.Train(features_all, labels);
         cascade_classifier.Print();
+
+        /* saving model to model.cfg... */
+        model.Save(cascade_classifier);
 
         cout << "Done." << endl;
     }
@@ -89,7 +93,9 @@ int main(int argc, char *argv[])
         dense_surf_feature_extractor.ExtractPatches(win, all_patches);
 
         /* get fitted patches */
-        //CascadeClassifier cascade_classifier; // TODO: read trained classifier
+        CascadeClassifier cascade_classifier;
+        //model.Load(cascade_classifier);
+
         vector<vector<int>> patch_indexes;
         vector<vector<Rect>> patches;
 
