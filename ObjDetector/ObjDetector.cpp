@@ -9,6 +9,8 @@
 
 using std::string;
 using std::array;
+using cv::imshow;
+using cv::waitKey;
 
 int get_filepaths(string folder, string wildcard, vector<string>& filepaths);
 
@@ -60,7 +62,8 @@ int main(int argc, char *argv[])
         for (int i = 0; i < filepaths.size(); i++)
         {
             vector<vector<double>> features_img;
-            dense_surf_feature_extractor.IntegralImage(filepaths[i], sums);
+            Mat img = imread(filepaths[i], cv::IMREAD_GRAYSCALE);
+            dense_surf_feature_extractor.IntegralImage(img, sums);
             dense_surf_feature_extractor.ExtractFeatures(sums, patches, features_img);
             features_all.push_back(features_img);
         }
@@ -97,7 +100,7 @@ int main(int argc, char *argv[])
         model.Load(cascade_classifier);
 
         vector<vector<int>> patch_indexes;
-        vector<vector<Rect>> patches;
+        vector<vector<Rect>> fitted_patches;
 
         cout << "Getting fitted patches..." << endl;
         cascade_classifier.GetFittedPatchIndexes(patch_indexes);
@@ -106,24 +109,30 @@ int main(int argc, char *argv[])
             vector<Rect> patches_perstage;
             for (int j = 0; j < patch_indexes[0].size(); j++)
                 patches_perstage.push_back(all_patches[patch_indexes[i][j]]);
-            patches.push_back(patches_perstage);
+            fitted_patches.push_back(patches_perstage);
         }
 
         /* calculate integral image */
         Mat sums[DenseSURFFeatureExtractor::n_bins];
+        vector<vector<Rect>> patches(fitted_patches);
 
         cout << "Calculating integral image..." << endl;
-        dense_surf_feature_extractor.IntegralImage(filepath, sums);
-        Size img(sums[0].cols - 1, sums[0].rows - 1);
+        Mat img = imread(filepath, cv::IMREAD_GRAYSCALE);
+        dense_surf_feature_extractor.IntegralImage(img, sums);
+        Size imgsize(sums[0].cols - 1, sums[0].rows - 1);
+
+        cv::namedWindow("Detect Result", cv::WINDOW_AUTOSIZE);
+        imshow("Detect Result", img);
+        waitKey(0);
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 10, 10); win.width <= img.width && win.height <= img.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        for (Rect win(0, 0, 10, 10); win.width <= imgsize.width && win.height <= imgsize.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
-            for (win.y = 0; win.y + win.height <= img.height; win.y += 2)
-                for (win.x = 0; win.x + win.width <= img.width; win.x += 2)
+            for (win.y = 0; win.y + win.height <= imgsize.height; win.y += 2)
+                for (win.x = 0; win.x + win.width <= imgsize.width; win.x += 2)
                 {
-                    dense_surf_feature_extractor.resize_patches(Size(19, 19), win.size(), patches);
+                    dense_surf_feature_extractor.resize_patches(Size(19, 19), win.size(), patches, fitted_patches);
 
                     vector<vector<vector<double>>> features_win;
 
@@ -134,9 +143,13 @@ int main(int argc, char *argv[])
                         features_win.push_back(features_win_perstage);
                     }
                     if (cascade_classifier.Predict2(features_win))
+                    {
                         cout << win << endl;
+                        rectangle(img, win, cv::Scalar(0, 255, 255));
+                        imshow("Detect Result", img);
+                        waitKey(0);
+                    }
                 }
-            cout << win << endl;
         }
     }
 

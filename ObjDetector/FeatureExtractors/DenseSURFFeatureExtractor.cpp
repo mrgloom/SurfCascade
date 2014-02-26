@@ -20,10 +20,8 @@ DenseSURFFeatureExtractor::~DenseSURFFeatureExtractor()
 {
 }
 
-void DenseSURFFeatureExtractor::IntegralImage(string filename, Mat sums[])
+void DenseSURFFeatureExtractor::IntegralImage(Mat img, Mat sums[])
 {
-    Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
-
     Mat img_padded;
     Mat img_filtered(img.rows, img.cols, CV_8UC1);
 
@@ -166,19 +164,19 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
         feature[i] /= norm;
 }
 
-void DenseSURFFeatureExtractor::resize_patches(Size size1, Size size2, vector<vector<Rect>>& patches)
+void DenseSURFFeatureExtractor::resize_patches(Size size1, Size size2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
 {
     double scale = (double)size2.width / size1.width; // both square
 
-    for (int i = 0; i < patches.size(); i++)
+    for (int i = 0; i < patches1.size(); i++)
     {
-        for (int j = 0; j < patches[0].size(); j++)
+        for (int j = 0; j < patches1[0].size(); j++)
         {
-            double ratio = (double)patches[i][j].width / patches[i][j].height;
-            patches[i][j].x = (int)(patches[i][j].x * scale);
-            patches[i][j].y = (int)(patches[i][j].y * scale);
-            patches[i][j].height = (int)(patches[i][j].height * scale);
-            patches[i][j].width = (int)(patches[i][j].height * ratio);
+            double ratio = (double)patches1[i][j].width / patches1[i][j].height;
+            patches2[i][j].x = (int)(patches1[i][j].x * scale);
+            patches2[i][j].y = (int)(patches1[i][j].y * scale);
+            patches2[i][j].height = (int)(patches1[i][j].height * scale);
+            patches2[i][j].width = (int)(patches2[i][j].height * ratio);
         }
     }
 }
