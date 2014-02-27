@@ -113,8 +113,13 @@ void DenseSURFFeatureExtractor::GetPatch(int x, int y, Size shape, int cell_edge
 void DenseSURFFeatureExtractor::CalcFeature(const Mat sums[], Rect patch, vector<double>& feature)
 {
     /* get separated blocks from patch */
+    int cell_edge;
+    if (patch.width == patch.height)
+        cell_edge = patch.width / 2;
+    else
+        cell_edge = patch.width < patch.height ? patch.width : patch.height;
+
     Rect rects[n_cells];
-    int cell_edge = patch.width < patch.height ? patch.width : patch.height;
     Size shape;
     shape.width = patch.width / cell_edge;
     shape.height = patch.height / cell_edge;
@@ -164,19 +169,29 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
         feature[i] /= norm;
 }
 
-void DenseSURFFeatureExtractor::resize_patches(Size size1, Size size2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
+void DenseSURFFeatureExtractor::project_patches(Rect win1, Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
 {
-    double scale = (double)size2.width / size1.width; // both square
+    double scale = (double)win2.width / win1.width; // both square
 
     for (int i = 0; i < patches1.size(); i++)
     {
-        for (int j = 0; j < patches1[0].size(); j++)
+        for (int j = 0; j < patches1[i].size(); j++)
         {
-            double ratio = (double)patches1[i][j].width / patches1[i][j].height;
-            patches2[i][j].x = (int)(patches1[i][j].x * scale);
-            patches2[i][j].y = (int)(patches1[i][j].y * scale);
-            patches2[i][j].height = (int)(patches1[i][j].height * scale);
-            patches2[i][j].width = (int)(patches2[i][j].height * ratio);
+            patches2[i][j].x = (int)(patches1[i][j].x * scale) + (win2.x - win1.x);
+            patches2[i][j].y = (int)(patches1[i][j].y * scale) + (win2.y - win1.y);
+
+            if (patches1[i][j].width >= patches1[i][j].height)
+            {
+                int ratio = patches1[i][j].width / patches1[i][j].height;
+                patches2[i][j].height = (int)(patches1[i][j].height * scale);
+                patches2[i][j].width = patches2[i][j].height * ratio;
+            }
+            else
+            {
+                int ratio = patches1[i][j].height / patches1[i][j].width;
+                patches2[i][j].width = (int)(patches1[i][j].width * scale);
+                patches2[i][j].height = patches2[i][j].width * ratio;
+            }
         }
     }
 }

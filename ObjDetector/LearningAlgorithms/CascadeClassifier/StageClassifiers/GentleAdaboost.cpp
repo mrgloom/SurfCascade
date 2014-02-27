@@ -165,6 +165,8 @@ double GentleAdaboost::Predict(vector<vector<double>>& x)
 
 double GentleAdaboost::Predict2(vector<vector<double>>& x)
 {
+    assert(weak_classifiers.size() == x.size());
+
     double sum = 0, prob;
 
     for (int i = 0; i < weak_classifiers.size(); i++)

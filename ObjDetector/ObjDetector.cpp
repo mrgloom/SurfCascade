@@ -9,8 +9,6 @@
 
 using std::string;
 using std::array;
-using cv::imshow;
-using cv::waitKey;
 
 int get_filepaths(string folder, string wildcard, vector<string>& filepaths);
 
@@ -85,7 +83,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/facedata/emily.jpg";
+        string filepath = "D:/facedata/16-1.jpg";
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
@@ -107,7 +105,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < patch_indexes.size(); i++)
         {
             vector<Rect> patches_perstage;
-            for (int j = 0; j < patch_indexes[0].size(); j++)
+            for (int j = 0; j < patch_indexes[i].size(); j++)
                 patches_perstage.push_back(all_patches[patch_indexes[i][j]]);
             fitted_patches.push_back(patches_perstage);
         }
@@ -118,21 +116,22 @@ int main(int argc, char *argv[])
 
         cout << "Calculating integral image..." << endl;
         Mat img = imread(filepath, cv::IMREAD_GRAYSCALE);
+        Mat img_rgb(img.size(), CV_8UC3);
+        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+
         dense_surf_feature_extractor.IntegralImage(img, sums);
         Size imgsize(sums[0].cols - 1, sums[0].rows - 1);
 
-        cv::namedWindow("Detect Result", cv::WINDOW_AUTOSIZE);
-        imshow("Detect Result", img);
-        waitKey(0);
+        cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 10, 10); win.width <= imgsize.width && win.height <= imgsize.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        for (Rect win(0, 0, 19, 19); win.width <= imgsize.width && win.height <= imgsize.height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
-            for (win.y = 0; win.y + win.height <= imgsize.height; win.y += 2)
+            for (win.y = 0; win.y + win.height <= imgsize.height; win.y += 19)
                 for (win.x = 0; win.x + win.width <= imgsize.width; win.x += 2)
                 {
-                    dense_surf_feature_extractor.resize_patches(Size(19, 19), win.size(), patches, fitted_patches);
+                    dense_surf_feature_extractor.project_patches(Rect(0, 0, 19, 19), win, fitted_patches, patches);
 
                     vector<vector<vector<double>>> features_win;
 
@@ -144,13 +143,22 @@ int main(int argc, char *argv[])
                     }
                     if (cascade_classifier.Predict2(features_win))
                     {
-                        cout << win << endl;
-                        rectangle(img, win, cv::Scalar(0, 255, 255));
-                        imshow("Detect Result", img);
-                        waitKey(0);
+                        cout << "Detected: " << win << endl;
+                        rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                     }
+
+                    Mat img_tmp = img_rgb.clone();
+                    rectangle(img_tmp, win, cv::Scalar(0, 255, 255), 1);
+                    cv::imshow("Result", img_tmp);
+                    cv::waitKey(100);
                 }
         }
+        cout << "Over.";
+
+        cv::destroyWindow("Result");
+        cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
+        cv::imshow("Result", img_rgb);
+        cv::waitKey(0);
     }
 
     return 0;
