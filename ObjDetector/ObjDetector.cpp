@@ -104,11 +104,11 @@ int main(int argc, char *argv[])
         /* prepare showing image */
         Mat img_rgb(img.size(), CV_8UC3);
         cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
-        cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
+        //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 80, 80); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        for (Rect win(0, 0, 60, 90); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
             for (win.y = 0; win.y + win.height <= img.size().height; win.y += 10)
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += 10)
@@ -121,19 +121,19 @@ int main(int argc, char *argv[])
 
                     if (cascade_classifier.Predict2(features_win))
                     {
-                        cout << "Detected: " << win << endl;
+                        //cout << "Detected: " << win << endl;
                         rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                     }
 
-                    Mat img_tmp = img_rgb.clone();
-                    rectangle(img_tmp, win, cv::Scalar(0, 255, 255), 1);
-                    cv::imshow("Result", img_tmp);
-                    cv::waitKey(100);
+                    //Mat img_tmp = img_rgb.clone();
+                    //rectangle(img_tmp, win, cv::Scalar(0, 255, 255), 1);
+                    //cv::imshow("Result", img_tmp);
+                    //cv::waitKey(100);
                 }
         }
         cout << "Over.";
 
-        cv::destroyWindow("Result");
+        //cv::destroyWindow("Result");
         cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
         cv::imshow("Result", img_rgb);
         cv::waitKey(0);

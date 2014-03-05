@@ -226,7 +226,7 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
         feature[i] /= norm;
 }
 
-void DenseSURFFeatureExtractor::ProjectPatches(Rect win1, Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
+void DenseSURFFeatureExtractor::ProjectPatches(const Rect win1, const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
 {
     double scale = (double)win2.width / win1.width; // both square
 

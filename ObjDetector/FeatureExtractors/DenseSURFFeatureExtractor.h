@@ -44,7 +44,7 @@ public:
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win);
     void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<double>>>& features_win);
     bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<double>>& features_img);
-    void ProjectPatches(Rect win1, Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
+    void ProjectPatches(const Rect win1, const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
 };
 
 #endif
