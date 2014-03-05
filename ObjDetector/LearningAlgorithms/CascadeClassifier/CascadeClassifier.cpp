@@ -6,34 +6,50 @@
 using std::ostream;
 using std::endl;
 
-/* parameter X: positive samples(files) in the front, negative samples afterwards */
-void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
+/* parameter X: only positive samples(files) */
+void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y, string neg_file, const vector<Rect>& patches)
 {
     assert(X.size() == y.size());
 
-    int n_total = (int)y.size();
-    int n_pos = (int)count(y.begin(), y.end(), true);
-    int n_neg = (int)(n_total - n_pos);
-
-    assert(n_pos <= n_neg);
-
-    vector<vector<vector<double>>> samples_X(X.begin(), X.begin() + 2 * n_pos);
-    vector<bool> samples_y(y.begin(), y.begin() + samples_X.size());
+    int n_pos = (int)y.size();
+    int n_neg = n_pos;
+    int n_total = n_pos * 2;
 
     FPR = 1.0;
     TPR = 1.0;
 
-    int j = n_pos * 2;
+    vector<bool> y_neg(n_neg, false);
+    y.insert(y.end(), y_neg.begin(), y_neg.end());
+
+    dense_surf_feature_extractor.LoadFileList(neg_file, dense_surf_feature_extractor.prefix_path);
 
     LOG_INFO("\tCascade stages begin");
     for (int i = 0; i < max_stages_num && FPR > FPR_target; i++)
     {
         LOG_INFO("\tCascade stage " << i);
 
+        /* renew negative samples */
+        X.erase(X.begin() + n_pos, X.end());
+
+        vector<vector<double>> features_img;
+
+        while (X.size() < n_total)
+        {
+            if (!dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_img))
+                break;
+            if (Predict(features_img) == true) // if false positive
+                X.push_back(features_img);
+        }
+        if (X.size() != n_total)
+        {
+            LOG_WARNING("\tRunning out of negative samples.");
+            break;
+        }
+
         shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
 
         LOG_INFO("\tTraining stage classifier");
-        stage_classifier->Train(samples_X, samples_y);
+        stage_classifier->Train(X, y);
         
         /* search ROC curve */
         stage_classifier->SearchTheta(X, y);
@@ -43,27 +59,6 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
         TPR *= stage_classifier->TPR;
 
         stage_classifiers.push_back(stage_classifier);
-
-        /* renew negative samples */
-        samples_X.erase(samples_X.begin() + n_pos, samples_X.end());
-        samples_y.erase(samples_y.begin() + n_pos, samples_y.end());
-
-        for (; j < n_total; j++)
-        {
-            if (Predict(X[j]) == true) // if false positive
-            {
-                samples_X.push_back(X[j]);
-                samples_y.push_back(y[j]);
-            }
-
-            if (samples_y.size() == n_pos * 2)
-                break;
-        }
-        if (samples_y.size() != n_pos * 2)
-        {
-            LOG_WARNING("\tRunning out of negative samples.");
-            break;
-        }
     }
     LOG_INFO("\tCascade stages end");
 }
