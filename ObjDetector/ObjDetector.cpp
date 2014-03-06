@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
-        string prefix_path = "D:/FaceData/Custom/";
+        string prefix_path = "D:/FaceData/24x24/";
         string pos_file(prefix_path + "pos.list");
         string neg_file(prefix_path + "neg.list");
 
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
         vector<Rect> dense_patches;
 
         cout << "Extracting patches..." << endl;
-        dense_surf_feature_extractor.win = Rect(0, 0, 60, 90); // TODO
+        dense_surf_feature_extractor.win = Rect(0, 0, 24, 24); // TODO
         dense_surf_feature_extractor.ExtractPatches(dense_patches);
 
         /* get fitted patches */
@@ -108,12 +108,13 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 60, 90); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        for (Rect win(0, 0, 70, 70); win.width <= 70 && win.height <= 70; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
-            for (win.y = 0; win.y + win.height <= img.size().height; win.y += 10)
-                for (win.x = 0; win.x + win.width <= img.size().width; win.x += 10)
+            for (win.y = 0; win.y + win.height <= img.size().height; win.y += 20)
+                for (win.x = 0; win.x + win.width <= img.size().width; win.x += 20)
                 {
-                    dense_surf_feature_extractor.ProjectPatches(Rect(0, 0, 60, 90), win, fitted_patches, patches); //TODO
+                    dense_surf_feature_extractor.ProjectPatches(dense_surf_feature_extractor.win, win, fitted_patches, patches); //TODO
 
                     vector<vector<vector<double>>> features_win;
 
@@ -131,7 +132,7 @@ int main(int argc, char *argv[])
                     //cv::waitKey(100);
                 }
         }
-        cout << "Over.";
+        cout << "Over." << endl;
 
         //cv::destroyWindow("Result");
         cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);

@@ -29,6 +29,8 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
         LOG_INFO("\tCascade stage " << i);
 
         /* renew negative samples */
+        LOG_INFO("\tRenew negative samples...");
+
         X.erase(X.begin() + n_pos, X.end());
 
         vector<vector<double>> features_img;
