@@ -28,26 +28,25 @@ void DenseSURFFeatureExtractor::LoadFileList(string filename, string prefix_path
 
     this->prefix_path = prefix_path;
 
-    filestream.open(filename);
+    filestream.open(prefix_path + filename);
     filestream >> imgname;
     filestream.seekg(0, filestream.beg);
 
     img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
-    win = Rect(0, 0, img.cols, img.rows);
+    size = Size(img.cols, img.rows);
 }
 
 void DenseSURFFeatureExtractor::ExtractPatches(vector<Rect>& patches)
 {
-    Rect patch;
+    for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++)
+    {
+        for (int cell_edge = min_cell_edge; cell_edge <= size.width / 2; cell_edge++)
+        {
+            Rect win(0, 0, shapes[j].width * cell_edge, shapes[j].height * cell_edge);
 
-    for (int j = 0; j < sizeof(shapes) / sizeof(shapes[0]); j++) {
-        Size shape = shapes[j];
-
-        for (int cell_edge = min_cell_edge; cell_edge <= win.width / 2; cell_edge++) {
-            for (int y = win.y; y + shape.height * cell_edge <= win.y + win.height; y += step)
-            for (int x = win.x; x + shape.width * cell_edge <= win.x + win.width; x += step) {
-                ConvertToPatch(x, y, shape, cell_edge, patch);
-                patches.push_back(patch);
+            for (win.y = 0; win.y + win.height <= size.height; win.y += step)
+            for (win.x = 0; win.x + win.width <= size.width; win.x += step) {
+                patches.push_back(win);
             }
         }
     }
@@ -106,7 +105,7 @@ bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& pat
     if (filestream >> imgname)
     {
         Mat img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
-        assert(img.cols == win.width && img.rows == win.height);
+        assert(img.cols == size.width && img.rows == size.height);
 
         IntegralImage(img);
         ExtractFeatures(patches, features_img);
@@ -159,15 +158,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filter
     }
 }
 
-void DenseSURFFeatureExtractor::ConvertToPatch(int x, int y, Size shape, int cell_edge, Rect& patch)
-{
-    patch.x = x;
-    patch.y = y;
-    patch.width = shape.width * cell_edge;
-    patch.height = shape.height * cell_edge;
-}
-
-void DenseSURFFeatureExtractor::CalcFeature(Rect patch, vector<double>& feature)
+void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<double>& feature)
 {
     /* get separated blocks from patch */
     int cell_edge;
@@ -225,16 +216,16 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
         feature[i] /= norm;
 }
 
-void DenseSURFFeatureExtractor::ProjectPatches(const Rect win1, const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
+void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
 {
-    double scale = (double)win2.width / win1.width; // both square
+    double scale = (double)win2.width / size.width; // both square
 
     for (int i = 0; i < patches1.size(); i++)
     {
         for (int j = 0; j < patches1[i].size(); j++)
         {
-            patches2[i][j].x = (int)(patches1[i][j].x * scale) + (win2.x - win1.x);
-            patches2[i][j].y = (int)(patches1[i][j].y * scale) + (win2.y - win1.y);
+            patches2[i][j].x = (int)(patches1[i][j].x * scale) + win2.x;
+            patches2[i][j].y = (int)(patches1[i][j].y * scale) + win2.y;
 
             if (patches1[i][j].width >= patches1[i][j].height)
             {

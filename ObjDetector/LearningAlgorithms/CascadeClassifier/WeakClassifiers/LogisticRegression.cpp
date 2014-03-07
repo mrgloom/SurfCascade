@@ -39,7 +39,7 @@ void LogisticRegression::Train(vector<vector<double>>& X, vector<bool>& y)
 
             theta[0] += alpha * diff; // update theta0 at first position
             for (int j = 1; j < theta.size(); j++)
-                theta[j] += alpha * diff * X[i][j - 1];
+                theta[j] += alpha * diff * X[i][j - 1]; // -alpha * 2 * lambda * theta[j];
 
             //if (diff > 0.0000000000000001)
             if (dist(theta, old_theta) < epsilon)

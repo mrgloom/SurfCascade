@@ -28,13 +28,12 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     Mat sums[n_bins];
 
     void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
-    void ConvertToPatch(int x, int y, Size shape, int cell_edge, Rect& patch);
-    void CalcFeature(Rect patch, vector<double>& feature);
+    void CalcFeature(const Rect& patch, vector<double>& feature);
     void Normalization(vector<double>& feature);
 
 public:
     string prefix_path;
-    Rect win;
+    Size size;
     static const int dim = n_bins * n_cells;
 
     ~DenseSURFFeatureExtractor();
@@ -44,7 +43,7 @@ public:
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win);
     void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<double>>>& features_win);
     bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<double>>& features_img);
-    void ProjectPatches(const Rect win1, const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
+    void ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
 };
 
 #endif

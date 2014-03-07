@@ -2,7 +2,6 @@
 #define STAGECLASSIFIER_H
 
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
-#include "Model.h"
 #include <vector>
 #include <memory>
 

@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
         string prefix_path = "D:/FaceData/24x24/";
-        string pos_file(prefix_path + "pos.list");
-        string neg_file(prefix_path + "neg.list");
+        string pos_file("pos.list");
+        string neg_file("neg.list");
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
 
         /* train cascade classifier */
         cout << "Training cascade classifier..." << endl;
-        CascadeClassifier cascade_classifier(dense_surf_feature_extractor);
-        cascade_classifier.Train(features_all, labels, neg_file, patches);
+        CascadeClassifier cascade_classifier;
+        cascade_classifier.Train(features_all, labels, dense_surf_feature_extractor, neg_file, patches);
         cascade_classifier.Print();
 
         /* saving model to model.cfg... */
@@ -67,18 +67,18 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/facedata/Detect/1974.jpg";
+        string filepath = "D:/facedata/Detect/1.jpg";
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
         vector<Rect> dense_patches;
 
         cout << "Extracting patches..." << endl;
-        dense_surf_feature_extractor.win = Rect(0, 0, 24, 24); // TODO
+        dense_surf_feature_extractor.size = Size(24, 24); // TODO
         dense_surf_feature_extractor.ExtractPatches(dense_patches);
 
         /* get fitted patches */
-        CascadeClassifier cascade_classifier(dense_surf_feature_extractor);
+        CascadeClassifier cascade_classifier;
         model.Load(cascade_classifier);
 
         vector<vector<int>> patch_indexes;
@@ -108,13 +108,14 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 70, 70); win.width <= 70 && win.height <= 70; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        Rect win(0, 0, 350, 350);
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
-            for (win.y = 0; win.y + win.height <= img.size().height; win.y += 20)
-                for (win.x = 0; win.x + win.width <= img.size().width; win.x += 20)
+            for (win.y = 0; win.y + win.height <= img.size().height; win.y += 2)
+            {
+                for (win.x = 0; win.x + win.width <= img.size().width; win.x += 2)
                 {
-                    dense_surf_feature_extractor.ProjectPatches(dense_surf_feature_extractor.win, win, fitted_patches, patches); //TODO
+                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches); //TODO
 
                     vector<vector<vector<double>>> features_win;
 
@@ -131,6 +132,7 @@ int main(int argc, char *argv[])
                     //cv::imshow("Result", img_tmp);
                     //cv::waitKey(100);
                 }
+            }
         }
         cout << "Over." << endl;
 

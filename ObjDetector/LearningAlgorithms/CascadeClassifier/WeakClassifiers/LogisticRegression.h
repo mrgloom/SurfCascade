@@ -2,7 +2,6 @@
 #define LOGISTICREGRESSION_H
 
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
-#include "Model.h"
 #include <vector>
 
 using std::vector;
@@ -13,6 +12,7 @@ class LogisticRegression : public WeakClassifier
     int max_iters = 1000;
     double alpha = 0.001;
     double epsilon = 0.0001;
+    double lambda = 1;
 
 public:
     LogisticRegression(int patch_index): WeakClassifier(patch_index) {};

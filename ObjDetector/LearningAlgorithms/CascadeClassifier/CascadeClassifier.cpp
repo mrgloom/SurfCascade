@@ -1,5 +1,6 @@
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
+#include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include "LOG.h"
 #include <cassert>
 
@@ -7,7 +8,7 @@ using std::ostream;
 using std::endl;
 
 /* parameter X: only positive samples(files) */
-void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y, string neg_file, const vector<Rect>& patches)
+void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches)
 {
     assert(X.size() == y.size());
 
