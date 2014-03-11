@@ -22,7 +22,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
     vector<bool> y_neg(n_neg, false);
     y.insert(y.end(), y_neg.begin(), y_neg.end());
 
-    dense_surf_feature_extractor.LoadFileList(neg_file, dense_surf_feature_extractor.prefix_path);
+    dense_surf_feature_extractor.LoadFileList(neg_file, dense_surf_feature_extractor.prefix_path, false);
 
     LOG_INFO("\tCascade stages begin");
     for (int i = 0; i < max_stages_num && FPR > FPR_target; i++)
@@ -34,20 +34,8 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
 
         X.erase(X.begin() + n_pos, X.end());
 
-        vector<vector<double>> features_img;
-
-        while (X.size() < n_total)
-        {
-            if (!dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_img))
-                break;
-            if (Predict(features_img) == true) // if false positive
-                X.push_back(features_img);
-        }
-        if (X.size() != n_total)
-        {
-            LOG_WARNING("\tRunning out of negative samples.");
+        if (!dense_surf_feature_extractor.FillNegSamples(patches, X, n_total, *this, i == 0))
             break;
-        }
 
         shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
 

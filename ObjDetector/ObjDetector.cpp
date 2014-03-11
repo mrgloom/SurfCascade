@@ -28,8 +28,8 @@ int main(int argc, char *argv[])
     /************************************************************************/
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
-        string prefix_path = "D:/FaceData/24x24/";
-        string pos_file("pos.list");
+        string prefix_path = "D:/FaceData/custom/";
+        string pos_file("pos_viola.list");
         string neg_file("neg.list");
 
         /* extract patches */
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         vector<Rect> patches;
 
         cout << "Extracting patches..." << endl;
-        dense_surf_feature_extractor.LoadFileList(pos_file, prefix_path);
+        dense_surf_feature_extractor.LoadFileList(pos_file, prefix_path, true);
         dense_surf_feature_extractor.ExtractPatches(patches);
 
         /* extract features in positive samples */
@@ -108,14 +108,14 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        Rect win(0, 0, 350, 350);
+        Rect win(0, 0, 250, 250);
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
             for (win.y = 0; win.y + win.height <= img.size().height; win.y += 2)
             {
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += 2)
                 {
-                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches); //TODO
+                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
 
                     vector<vector<vector<double>>> features_win;
 

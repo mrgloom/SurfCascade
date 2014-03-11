@@ -16,6 +16,8 @@ using std::string;
 using std::vector;
 using std::ifstream;
 
+class CascadeClassifier;
+
 class DenseSURFFeatureExtractor : public FeatureExtractor
 {
     static const Size shapes[3];
@@ -37,13 +39,15 @@ public:
     static const int dim = n_bins * n_cells;
 
     ~DenseSURFFeatureExtractor();
-    void LoadFileList(string filename, string prefix_path);
+    void LoadFileList(string filename, string prefix_path, bool set_size);
     void IntegralImage(Mat img);
     void ExtractPatches(vector<Rect>& patches);
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win);
     void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<double>>>& features_win);
     bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<double>>& features_img);
+    bool FillNegSamples(const vector<Rect>& patches, vector<vector<vector<double>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first);
     void ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
+    void ProjectPatches(const Rect win2, const vector<Rect>& patches1, vector<Rect>& patches2);
 };
 
 #endif

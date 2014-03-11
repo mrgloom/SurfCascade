@@ -1,4 +1,6 @@
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
+#include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
+#include "LOG.h"
 #include <vector>
 #include <string>
 #include <array>
@@ -21,19 +23,23 @@ DenseSURFFeatureExtractor::~DenseSURFFeatureExtractor()
 {
 }
 
-void DenseSURFFeatureExtractor::LoadFileList(string filename, string prefix_path)
+void DenseSURFFeatureExtractor::LoadFileList(string filename, string prefix_path, bool set_size)
 {
-    string imgname;
-    Mat img;
-
     this->prefix_path = prefix_path;
 
     filestream.open(prefix_path + filename);
-    filestream >> imgname;
-    filestream.seekg(0, filestream.beg);
 
-    img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
-    size = Size(img.cols, img.rows);
+    if (set_size)
+    {
+        string imgname;
+        Mat img;
+
+        filestream >> imgname;
+        filestream.seekg(0, filestream.beg);
+
+        img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
+        size = Size(img.cols, img.rows);
+    }
 }
 
 void DenseSURFFeatureExtractor::ExtractPatches(vector<Rect>& patches)
@@ -70,10 +76,9 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win)
 {
     /* compute features */
-    vector<double> feature;
-
     for (int i = 0; i < patches.size(); i++)
     {
+        vector<double> feature;
         CalcFeature(patches[i], feature);
         features_win.push_back(feature);
     }
@@ -118,6 +123,42 @@ bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& pat
         filestream.clear();
         return false;
     }
+}
+
+bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<double>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
+{
+    string imgname;
+
+    vector<Rect> new_patches(patches);
+
+    while (getline(filestream, imgname))
+    {
+        Mat img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
+        LOG_DEBUG("\tReading image: " << imgname << ", features_all.size() = " << features_all.size());
+
+        IntegralImage(img);
+
+        Rect win(0, 0, size.width, size.height);
+        for (win.y = 0; win.y + win.height <= img.size().height; win.y += win.height)
+        {
+            for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
+            {
+                vector<vector<double>> features_img;
+                ProjectPatches(win, patches, new_patches);
+
+                ExtractFeatures(new_patches, features_img);
+
+                if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                    features_all.push_back(features_img);
+
+                if (features_all.size() == n_total)
+                    return true;
+            }
+        }
+    }
+
+    LOG_WARNING("\tRunning out of negative samples.");
+    return false;
 }
 
 void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin)
@@ -239,6 +280,30 @@ void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vec
                 patches2[i][j].width = (int)(patches1[i][j].width * scale);
                 patches2[i][j].height = patches2[i][j].width * ratio;
             }
+        }
+    }
+}
+
+void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<Rect>& patches1, vector<Rect>& patches2)
+{
+    double scale = (double)win2.width / size.width; // both square
+
+    for (int i = 0; i < patches1.size(); i++)
+    {
+        patches2[i].x = (int)(patches1[i].x * scale) + win2.x;
+        patches2[i].y = (int)(patches1[i].y * scale) + win2.y;
+
+        if (patches1[i].width >= patches1[i].height)
+        {
+            int ratio = patches1[i].width / patches1[i].height;
+            patches2[i].height = (int)(patches1[i].height * scale);
+            patches2[i].width = patches2[i].height * ratio;
+        }
+        else
+        {
+            int ratio = patches1[i].height / patches1[i].width;
+            patches2[i].width = (int)(patches1[i].width * scale);
+            patches2[i].height = patches2[i].width * ratio;
         }
     }
 }
