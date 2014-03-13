@@ -10,6 +10,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ObjDetector", "ObjDetector\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libconfig++", "libconfig\libconfig++.vcxproj", "{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "liblinear", "liblinear\liblinear.vcxproj", "{953B381C-7D2B-44EF-975D-9594F9582F31}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -40,6 +42,16 @@ Global
 		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|Win32.ActiveCfg = Release|x64
 		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|x64.ActiveCfg = Release|x64
 		{A0C36CE7-D908-4573-8B69-249EEEB7D2BE}.Release|x64.Build.0 = Release|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Debug|Mixed Platforms.ActiveCfg = Debug|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Debug|Mixed Platforms.Build.0 = Debug|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Debug|Win32.ActiveCfg = Debug|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Debug|x64.ActiveCfg = Debug|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Debug|x64.Build.0 = Debug|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Release|Mixed Platforms.ActiveCfg = Release|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Release|Mixed Platforms.Build.0 = Release|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Release|Win32.ActiveCfg = Release|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Release|x64.ActiveCfg = Release|x64
+		{953B381C-7D2B-44EF-975D-9594F9582F31}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

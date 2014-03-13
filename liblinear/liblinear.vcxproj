@@ -9,37 +9,10 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="FeatureExtractors\DenseSURFFeatureExtractor.cpp" />
-    <ClCompile Include="FeatureExtractors\FeatureExtractor.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
-    <ClCompile Include="Model.cpp" />
-    <ClCompile Include="ObjDetector.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FeatureExtractors\DenseSURFFeatureExtractor.h" />
-    <ClInclude Include="FeatureExtractors\FeatureExtractor.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h" />
-    <ClInclude Include="LOG.h" />
-    <ClInclude Include="Model.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C3C0D677-98D1-49BE-BF0C-3E7EB06CADAD}</ProjectGuid>
-    <RootNamespace>ObjDetector</RootNamespace>
-    <ProjectName>ObjDetector</ProjectName>
+    <ProjectGuid>{953B381C-7D2B-44EF-975D-9594F9582F31}</ProjectGuid>
+    <RootNamespace>liblinear</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -49,7 +22,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -60,11 +33,9 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\OpenCV_Debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\OpenCV_Release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup />
@@ -73,13 +44,9 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)\libconfig;$(SolutionDir)\liblinear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -89,17 +56,28 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libconfig;$(SolutionDir)liblinear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="blas\daxpy.c" />
+    <ClCompile Include="blas\ddot.c" />
+    <ClCompile Include="blas\dnrm2.c" />
+    <ClCompile Include="blas\dscal.c" />
+    <ClCompile Include="linear.cpp" />
+    <ClCompile Include="tron.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="blas\blas.h" />
+    <ClInclude Include="blas\blasp.h" />
+    <ClInclude Include="linear.h" />
+    <ClInclude Include="tron.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

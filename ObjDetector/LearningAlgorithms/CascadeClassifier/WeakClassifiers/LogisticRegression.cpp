@@ -1,5 +1,6 @@
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/LogisticRegression.h"
 #include "LOG.h"
+#include "linear.h"
 #include <numeric>
 #include <cassert>
 #include <iostream>
