@@ -56,7 +56,7 @@ int Model::Save(CascadeClassifier& cascade_classifier)
 
         for (int j = 0; j < gentle_adaboost->weak_classifiers.size(); j++)
         {
-            shared_ptr<WeakClassifier> weak_classifier = gentle_adaboost->weak_classifiers[j];
+            shared_ptr<LogisticRegression> weak_classifier = gentle_adaboost->weak_classifiers[j];
             Setting& weak_classifier_grp = weak_classifiers_lst.add(Setting::TypeGroup);
 
             weak_classifier_grp.add("patch_index", Setting::TypeInt) = weak_classifier->patch_index;
@@ -67,9 +67,9 @@ int Model::Save(CascadeClassifier& cascade_classifier)
             for (int k = 0; k < logistic_regression->theta.size(); k++)
                 theta_arr.add(Setting::TypeFloat) = logistic_regression->theta[k];
 
-            weak_classifier_grp.add("max_iters", Setting::TypeInt) = logistic_regression->max_iters;
-            weak_classifier_grp.add("alpha", Setting::TypeFloat) = logistic_regression->alpha;
-            weak_classifier_grp.add("epsilon", Setting::TypeFloat) = logistic_regression->epsilon;
+            //weak_classifier_grp.add("max_iters", Setting::TypeInt) = logistic_regression->max_iters;
+            //weak_classifier_grp.add("alpha", Setting::TypeFloat) = logistic_regression->alpha;
+            //weak_classifier_grp.add("epsilon", Setting::TypeFloat) = logistic_regression->epsilon;
         }
     }
 
@@ -146,7 +146,7 @@ int Model::Load(CascadeClassifier& cascade_classifier)
 
             for (int j = 0; j < weak_classifiers_lst.getLength(); j++)
             {
-                shared_ptr<WeakClassifier> weak_classifier(new LogisticRegression(0));
+                shared_ptr<LogisticRegression> weak_classifier(new LogisticRegression(0));
                 Setting& weak_classifier_grp = weak_classifiers_lst[j];
 
                 weak_classifier->patch_index = weak_classifier_grp["patch_index"];
@@ -157,9 +157,9 @@ int Model::Load(CascadeClassifier& cascade_classifier)
                 for (int k = 0; k < theta_arr.getLength(); k++)
                     logistic_regression->theta.push_back(theta_arr[k]);
 
-                logistic_regression->max_iters = weak_classifier_grp["max_iters"];
-                logistic_regression->alpha = weak_classifier_grp["alpha"];
-                logistic_regression->epsilon = weak_classifier_grp["epsilon"];
+                //logistic_regression->max_iters = weak_classifier_grp["max_iters"];
+                //logistic_regression->alpha = weak_classifier_grp["alpha"];
+                //logistic_regression->epsilon = weak_classifier_grp["epsilon"];
 
                 gentle_adaboost->weak_classifiers.push_back(weak_classifier);
             }

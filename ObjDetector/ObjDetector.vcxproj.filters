@@ -26,9 +26,6 @@
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -53,9 +50,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.h">

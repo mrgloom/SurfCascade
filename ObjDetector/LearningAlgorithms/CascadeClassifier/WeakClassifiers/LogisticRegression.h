@@ -1,24 +1,29 @@
 #ifndef LOGISTICREGRESSION_H
 #define LOGISTICREGRESSION_H
 
-#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/WeakClassifier.h"
 #include <vector>
 
 using std::vector;
 
-class LogisticRegression : public WeakClassifier
+struct parameter;
+struct problem;
+struct model;
+struct feature_node;
+
+class LogisticRegression
 {
     vector<double> theta;
-    int max_iters = 1000;
-    double alpha = 0.001;
-    double epsilon = 0.0001;
-    double lambda = 1;
+
+    // for liblinear
+    parameter* param;
+    model* model_;
 
 public:
-    LogisticRegression(int patch_index): WeakClassifier(patch_index) {};
-    void Train(vector<vector<double>>& X, vector<bool>& y);
-    double Predict(vector<double>& X);
-    void Print();
+    int patch_index;
+
+    LogisticRegression(int patch_index);
+    void Train(problem* prob);
+    double Predict(vector<double>& x);
     friend class Model;
 };
 

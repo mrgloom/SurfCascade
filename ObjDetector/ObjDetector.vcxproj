@@ -21,7 +21,6 @@
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
     <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjDetector.cpp" />
   </ItemGroup>
@@ -32,7 +31,6 @@
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h" />
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h" />
     <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\WeakClassifier.h" />
     <ClInclude Include="LOG.h" />
     <ClInclude Include="Model.h" />
   </ItemGroup>
@@ -73,13 +71,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)\libconfig;$(SolutionDir)\liblinear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)liblinear;$(SolutionDir)libconfig;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libconfig++.lib;liblinear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -89,7 +87,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libconfig;$(SolutionDir)liblinear;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)liblinear;$(SolutionDir)libconfig;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -97,7 +95,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>$(OutDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libconfig++.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libconfig++.lib;liblinear.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

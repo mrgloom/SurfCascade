@@ -6,12 +6,14 @@
 
 using std::vector;
 
+class LogisticRegression;
+
 class GentleAdaboost : public StageClassifier
 {
     double total_AUC_score = 0;
     int sample_num = 960; // 30 * 32
     int max_iters = 100;
-    vector<shared_ptr<WeakClassifier>> weak_classifiers;
+    vector<shared_ptr<LogisticRegression>> weak_classifiers;
 
 public:
     GentleAdaboost(double TPR_min_perstage): StageClassifier(TPR_min_perstage) {}

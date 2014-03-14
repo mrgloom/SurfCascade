@@ -1,5 +1,6 @@
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/LogisticRegression.h"
+#include "linear.h"
 #include "LOG.h"
 #include <algorithm>
 #include <cassert>
@@ -37,7 +38,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
         sort(index.begin() + n_pos, index.end(), [&weights](int a, int b) {return weights[a] > weights[b]; });
         
         /* parallel for each patch, train a weak classifier */
-        shared_ptr<WeakClassifier> best_weak_classifier;
+        shared_ptr<LogisticRegression> best_weak_classifier;
         double curr_AUC_score;
         double best_AUC_score = 0;
 
@@ -45,48 +46,70 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
         for (int k = 0; k < patches_num; k++)
         {
             /* get weak classifier's training set */
-            vector<vector<double>> samples_X;
-            vector<bool> samples_y;
             vector<double> feature;
+
+            problem* prob = new problem;
+            prob->l = sample_num * 2;
+            prob->n = 32 + 1;
+            prob->bias = 1;
+            prob->y = new double[sample_num * 2];
+            prob->x = new feature_node* [sample_num * 2];
 
             assert(sample_num <= n_total);
             for (int i = 0; i < sample_num; i++)
             {
+                prob->x[i] = new feature_node[32 + 2];
                 feature = X[index[i]][k];
-                samples_X.push_back(feature);
-                samples_y.push_back(y[index[i]]);
+                int j;
+                for (j = 0; j < 32; j++)
+                {
+                    prob->x[i][j].index = j + 1;
+                    prob->x[i][j].value = feature[j];
+                }
+                prob->x[i][j].index = 32;
+                prob->x[i][j].value = 1;
+                prob->x[i][++j].index = -1;
+                prob->y[i] = 1;
 
+                prob->x[i + sample_num] = new feature_node[32 + 2];
                 feature = X[index[i + n_pos]][k];
-                samples_X.push_back(feature);
-                samples_y.push_back(y[index[i + n_pos]]);
+                for (j = 0; j < 32; j++)
+                {
+                    prob->x[i + sample_num][j].index = j + 1;
+                    prob->x[i + sample_num][j].value = feature[j];
+                }
+                prob->x[i + sample_num][j].index = 32;
+                prob->x[i + sample_num][j].value = 1;
+                prob->x[i + sample_num][++j].index = -1;
+                prob->y[i + sample_num] = -1;
             }
 
             /* train weak classifier */
-            shared_ptr<WeakClassifier> weak_classifier(new LogisticRegression(k));
+            shared_ptr<LogisticRegression> weak_classifier(new LogisticRegression(k));
 
             if (SETLEVEL == DEBUG_LEVEL)
                 LOG_INFO("\t\tTraining logistic regression " << k << '/' << patches_num);
             else
                 LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
 
-            weak_classifier->Train(samples_X, samples_y);
+            weak_classifier->Train(prob);
 
-            /* test on training set */
-            #if SETLEVEL == DEBUG_LEVEL
-            int TP = 0, TN = 0;
-            double prob;
-            for (int i = 0; i < samples_X.size(); i++)
-            {
-                prob = weak_classifier->Predict(samples_X[i]);
-                if ((prob >= 0.5) && samples_y[i] == true)
-                    TP++;
-                else if ((prob < 0.5) && samples_y[i] == false)
-                    TN++;
-            }
-            LOG_DEBUG_NN("\t\tWeak classifier: ");
-            LOG_DEBUG_NN("TP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
-            LOG_DEBUG(", Result: " << (double)(TP + TN) / samples_y.size());
-            #endif
+            ///* test on training set */
+            //#if SETLEVEL == DEBUG_LEVEL
+            //int TP = 0, TN = 0;
+            //double prob;
+            //for (int i = 0; i < samples_X.size(); i++)
+            //{
+            //    prob = weak_classifier->Predict(samples_X[i]);
+            //    if ((prob >= 0.5) && samples_y[i] == true)
+            //        TP++;
+            //    else if ((prob < 0.5) && samples_y[i] == false)
+            //        TN++;
+            //}
+            //LOG_DEBUG_NN("\t\tWeak classifier: ");
+            //LOG_DEBUG_NN("TP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
+            //LOG_DEBUG(", Result: " << (double)(TP + TN) / samples_y.size());
+            //#endif
 
             /* evaluate on the whole training set to obtain the AUC score */
             weak_classifiers.push_back(weak_classifier);
@@ -100,6 +123,12 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                 best_AUC_score = curr_AUC_score;
                 best_weak_classifier = weak_classifier;
             }
+
+            /* clean up */
+            for (int i = 0; i < sample_num * 2; i++)
+                delete[] prob->x[i];
+            delete[] prob->y;
+            delete prob;
 
             LOG_DEBUG_NN(endl); // empty line between weak classifiers' debug output
         }
