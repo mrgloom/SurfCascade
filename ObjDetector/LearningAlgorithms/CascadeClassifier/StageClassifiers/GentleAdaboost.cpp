@@ -50,15 +50,15 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
 
             problem* prob = new problem;
             prob->l = sample_num * 2;
-            prob->n = 32 + 1;
-            prob->bias = 1;
+            prob->bias = 0;
+            prob->n = 32 + (prob->bias != 0);
             prob->y = new double[sample_num * 2];
             prob->x = new feature_node* [sample_num * 2];
 
             assert(sample_num <= n_total);
             for (int i = 0; i < sample_num; i++)
             {
-                prob->x[i] = new feature_node[32 + 2];
+                prob->x[i] = new feature_node[32 + 1 + (prob->bias != 0)];
                 feature = X[index[i]][k];
                 int j;
                 for (j = 0; j < 32; j++)
@@ -66,21 +66,29 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                     prob->x[i][j].index = j + 1;
                     prob->x[i][j].value = feature[j];
                 }
-                prob->x[i][j].index = 32;
-                prob->x[i][j].value = 1;
-                prob->x[i][++j].index = -1;
+                if (prob->bias != 0)
+                {
+                    prob->x[i][j].index = 32;
+                    prob->x[i][j].value = prob->bias;
+                    ++j;
+                }
+                prob->x[i][j].index = -1;
                 prob->y[i] = 1;
 
-                prob->x[i + sample_num] = new feature_node[32 + 2];
+                prob->x[i + sample_num] = new feature_node[32 + 1 + (prob->bias != 0)];
                 feature = X[index[i + n_pos]][k];
                 for (j = 0; j < 32; j++)
                 {
                     prob->x[i + sample_num][j].index = j + 1;
                     prob->x[i + sample_num][j].value = feature[j];
                 }
-                prob->x[i + sample_num][j].index = 32;
-                prob->x[i + sample_num][j].value = 1;
-                prob->x[i + sample_num][++j].index = -1;
+                if (prob->bias != 0)
+                {
+                    prob->x[i + sample_num][j].index = 32;
+                    prob->x[i + sample_num][j].value = prob->bias;
+                    ++j;
+                }
+                prob->x[i + sample_num][j].index = -1;
                 prob->y[i + sample_num] = -1;
             }
 
