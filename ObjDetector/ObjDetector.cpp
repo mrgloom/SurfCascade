@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
         string prefix_path = "D:/FaceData/custom/";
-        string pos_file("pos_viola.list");
+        string pos_file("pos_viola_all.list");
         string neg_file("neg.list");
 
         /* extract patches */
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
         string filepath = "D:/facedata/Detect/1.jpg";
+        Rect win(0, 0, 300, 300);
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
@@ -108,7 +109,6 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         cout << "Scanning with varying windows..." << endl;
-        Rect win(0, 0, 250, 250);
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
             for (win.y = 0; win.y + win.height <= img.size().height; win.y += 2)

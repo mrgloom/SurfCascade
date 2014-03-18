@@ -4,6 +4,7 @@
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
 #include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/LogisticRegression.h"
+#include "linear.h"
 #include "libconfig.h++"
 #include "LOG.h"
 #include <memory>
@@ -63,13 +64,19 @@ int Model::Save(CascadeClassifier& cascade_classifier)
 
             shared_ptr<LogisticRegression> logistic_regression = static_pointer_cast<LogisticRegression>(weak_classifier);
 
-            Setting& theta_arr = weak_classifier_grp.add("theta", Setting::TypeArray);
-            for (int k = 0; k < logistic_regression->theta.size(); k++)
-                theta_arr.add(Setting::TypeFloat) = logistic_regression->theta[k];
+            weak_classifier_grp.add("eps", Setting::TypeFloat) = logistic_regression->model_->param.eps;
+            weak_classifier_grp.add("C", Setting::TypeFloat) = logistic_regression->model_->param.C;
+            weak_classifier_grp.add("nr_class", Setting::TypeInt) = logistic_regression->model_->nr_class;
+            weak_classifier_grp.add("nr_feature", Setting::TypeInt) = logistic_regression->model_->nr_feature;
+            weak_classifier_grp.add("bias", Setting::TypeFloat) = logistic_regression->model_->bias;
 
-            //weak_classifier_grp.add("max_iters", Setting::TypeInt) = logistic_regression->max_iters;
-            //weak_classifier_grp.add("alpha", Setting::TypeFloat) = logistic_regression->alpha;
-            //weak_classifier_grp.add("epsilon", Setting::TypeFloat) = logistic_regression->epsilon;
+            Setting& w_arr = weak_classifier_grp.add("w", Setting::TypeArray);
+            for (int k = 0; k < logistic_regression->model_->nr_feature + 1; k++)
+                w_arr.add(Setting::TypeFloat) = logistic_regression->model_->w[k];
+
+            Setting& label_arr = weak_classifier_grp.add("label", Setting::TypeArray);
+            label_arr.add(Setting::TypeInt) = logistic_regression->model_->label[0];
+            label_arr.add(Setting::TypeInt) = logistic_regression->model_->label[1];
         }
     }
 
@@ -153,13 +160,24 @@ int Model::Load(CascadeClassifier& cascade_classifier)
 
                 shared_ptr<LogisticRegression> logistic_regression = static_pointer_cast<LogisticRegression>(weak_classifier);
 
-                Setting& theta_arr = weak_classifier_grp["theta"];
-                for (int k = 0; k < theta_arr.getLength(); k++)
-                    logistic_regression->theta.push_back(theta_arr[k]);
+                logistic_regression->model_ = new model;
+                logistic_regression->model_->param.solver_type = 0;
+                logistic_regression->model_->param.nr_weight = 0;
+                logistic_regression->model_->param.eps = weak_classifier_grp["eps"];
+                logistic_regression->model_->param.C = weak_classifier_grp["C"];
+                logistic_regression->model_->nr_class = weak_classifier_grp["nr_class"];
+                logistic_regression->model_->nr_feature = weak_classifier_grp["nr_feature"];
+                logistic_regression->model_->bias = weak_classifier_grp["bias"];
 
-                //logistic_regression->max_iters = weak_classifier_grp["max_iters"];
-                //logistic_regression->alpha = weak_classifier_grp["alpha"];
-                //logistic_regression->epsilon = weak_classifier_grp["epsilon"];
+                Setting& w_arr = weak_classifier_grp["w"];
+                logistic_regression->model_->w = new double[w_arr.getLength()];
+                for (int k = 0; k < w_arr.getLength(); k++)
+                    logistic_regression->model_->w[k] = w_arr[k];
+
+                Setting& label_arr = weak_classifier_grp["label"];
+                logistic_regression->model_->label = new int[2];
+                logistic_regression->model_->label[0] = label_arr[0];
+                logistic_regression->model_->label[1] = label_arr[1];
 
                 gentle_adaboost->weak_classifiers.push_back(weak_classifier);
             }

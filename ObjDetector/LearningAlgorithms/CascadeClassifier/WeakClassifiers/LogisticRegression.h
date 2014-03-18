@@ -12,8 +12,6 @@ struct feature_node;
 
 class LogisticRegression
 {
-    vector<double> theta;
-
     // for liblinear
     parameter* param;
     model* model_;
