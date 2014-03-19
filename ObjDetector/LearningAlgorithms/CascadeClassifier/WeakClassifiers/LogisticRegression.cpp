@@ -45,9 +45,13 @@ double LogisticRegression::Predict(vector<double>& x)
         fn[i].index = i;
         fn[i].value = x[i];
     }
-    fn[i].index = i;
-    fn[i].value = 1;
-    fn[++i].index = -1;
+    if (model_->bias > 0)
+    {
+        fn[i].index = i;
+        fn[i].value = 1;
+        ++i;
+    }
+    fn[i].index = -1;
 
     predict_probability(model_, fn, prob_estimates);
 

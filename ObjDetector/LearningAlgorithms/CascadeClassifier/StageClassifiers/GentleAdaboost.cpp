@@ -50,7 +50,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
 
             problem* prob = new problem;
             prob->l = sample_num * 2;
-            prob->bias = 0;
+            prob->bias = 1;
             prob->n = 32 + (prob->bias != 0);
             prob->y = new double[sample_num * 2];
             prob->x = new feature_node* [sample_num * 2];
@@ -68,7 +68,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                 }
                 if (prob->bias != 0)
                 {
-                    prob->x[i][j].index = 32;
+                    prob->x[i][j].index = j;
                     prob->x[i][j].value = prob->bias;
                     ++j;
                 }
@@ -84,7 +84,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                 }
                 if (prob->bias != 0)
                 {
-                    prob->x[i + sample_num][j].index = 32;
+                    prob->x[i + sample_num][j].index = j;
                     prob->x[i + sample_num][j].value = prob->bias;
                     ++j;
                 }
