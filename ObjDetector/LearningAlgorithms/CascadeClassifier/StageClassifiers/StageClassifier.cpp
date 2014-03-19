@@ -41,20 +41,20 @@ double StageClassifier::Evaluate(vector<vector<vector<double>>>& X, vector<bool>
     for (int i = 0; i < X.size(); i++)
         probs.push_back(Predict(X[i]));
 
-    /* test on training set */
-    #if SETLEVEL == DEBUG_LEVEL
-    int TP = 0, TN = 0;
-    for (int i = 0; i < X.size(); i++)
-    {
-        if ((probs[i] >= 0.5) && y[i] == true)
-            TP++;
-        else if ((probs[i] < 0.5) && y[i] == false)
-            TN++;
-    }
-    LOG_DEBUG_NN("\t\tStrong classifier: ");
-    LOG_DEBUG_NN("TP = " << TP << '/' << y.size() / 2 << ", TN = " << TN << '/' << y.size() / 2);
-    LOG_DEBUG_NN(", Result: " << (double)(TP + TN) / y.size());
-    #endif
+    /* test on training set (0.5 threshhold??) */
+    //#if SETLEVEL == DEBUG_LEVEL
+    //int TP = 0, TN = 0;
+    //for (int i = 0; i < X.size(); i++)
+    //{
+    //    if ((probs[i] >= 0.5) && y[i] == true)
+    //        TP++;
+    //    else if ((probs[i] < 0.5) && y[i] == false)
+    //        TN++;
+    //}
+    //LOG_DEBUG_NN("\t\tStrong classifier: ");
+    //LOG_DEBUG_NN("TP = " << TP << '/' << y.size() / 2 << ", TN = " << TN << '/' << y.size() / 2);
+    //LOG_DEBUG_NN(", Result: " << (double)(TP + TN) / y.size());
+    //#endif
 
     for (double threshhold = 1; threshhold >= 0; threshhold -= auc_step)
     {
