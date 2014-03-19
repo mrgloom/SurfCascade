@@ -14,7 +14,7 @@ void print_null(const char *s) {}
 
 LogisticRegression::LogisticRegression(int patch_index)
 {
-    patch_index = patch_index;
+    this->patch_index = patch_index;
 
     param = new parameter();
     param->solver_type = 0;
