@@ -25,11 +25,6 @@ int Model::Save(CascadeClassifier& cascade_classifier)
 
     Setting& cascade_classifier_grp = root.add("cascade_classifier", Setting::TypeGroup);
 
-    cascade_classifier_grp.add("max_stages_num", Setting::TypeInt) = cascade_classifier.max_stages_num;
-    cascade_classifier_grp.add("FPR_target", Setting::TypeFloat) = cascade_classifier.FPR_target;
-    cascade_classifier_grp.add("TPR_min_perstage", Setting::TypeFloat) = cascade_classifier.TPR_min_perstage;
-    cascade_classifier_grp.add("FPR", Setting::TypeFloat) = cascade_classifier.FPR;
-    cascade_classifier_grp.add("TPR", Setting::TypeFloat) = cascade_classifier.TPR;
     Setting& stage_classifiers_lst = cascade_classifier_grp.add("stage_classifiers", Setting::TypeList);
 
     for (int i = 0; i < cascade_classifier.stage_classifiers.size(); i++)
@@ -37,21 +32,9 @@ int Model::Save(CascadeClassifier& cascade_classifier)
         shared_ptr<StageClassifier> stage_classifier = cascade_classifier.stage_classifiers[i];
         Setting& stage_classifier_grp = stage_classifiers_lst.add(Setting::TypeGroup);
 
-        stage_classifier_grp.add("search_step", Setting::TypeFloat) = stage_classifier->search_step;
-        stage_classifier_grp.add("auc_step", Setting::TypeFloat) = stage_classifier->auc_step;
-        stage_classifier_grp.add("TPR_min", Setting::TypeFloat) = stage_classifier->TPR_min;
-        stage_classifier_grp.add("n_total", Setting::TypeInt) = stage_classifier->n_total;
-        stage_classifier_grp.add("n_pos", Setting::TypeInt) = stage_classifier->n_pos;
-        stage_classifier_grp.add("n_neg", Setting::TypeInt) = stage_classifier->n_neg;
-        stage_classifier_grp.add("FPR", Setting::TypeFloat) = stage_classifier->FPR;
-        stage_classifier_grp.add("TPR", Setting::TypeFloat) = stage_classifier->TPR;
         stage_classifier_grp.add("theta", Setting::TypeFloat) = stage_classifier->theta;
 
         shared_ptr<GentleAdaboost> gentle_adaboost = static_pointer_cast<GentleAdaboost>(stage_classifier);
-
-        stage_classifier_grp.add("total_AUC_score", Setting::TypeFloat) = gentle_adaboost->total_AUC_score;
-        stage_classifier_grp.add("sample_num", Setting::TypeInt) = gentle_adaboost->sample_num;
-        stage_classifier_grp.add("max_iters", Setting::TypeInt) = gentle_adaboost->max_iters;
 
         Setting& weak_classifiers_lst = stage_classifier_grp.add("weak_classifiers", Setting::TypeList);
 
@@ -121,11 +104,6 @@ int Model::Load(CascadeClassifier& cascade_classifier)
     {
         Setting& cascade_classifier_grp = root["cascade_classifier"];
 
-        cascade_classifier.max_stages_num = cascade_classifier_grp["max_stages_num"];
-        cascade_classifier.FPR_target = cascade_classifier_grp["FPR_target"];
-        cascade_classifier.TPR_min_perstage = cascade_classifier_grp["TPR_min_perstage"];
-        cascade_classifier.FPR = cascade_classifier_grp["FPR"];
-        cascade_classifier.TPR = cascade_classifier_grp["TPR"];
         Setting& stage_classifiers_lst = cascade_classifier_grp["stage_classifiers"];
 
         for (int i = 0; i < stage_classifiers_lst.getLength(); i++)
@@ -133,21 +111,9 @@ int Model::Load(CascadeClassifier& cascade_classifier)
             shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(cascade_classifier.TPR_min_perstage));
             Setting& stage_classifier_grp = stage_classifiers_lst[i];
 
-            stage_classifier->search_step = stage_classifier_grp["search_step"];
-            stage_classifier->auc_step = stage_classifier_grp["auc_step"];
-            stage_classifier->TPR_min = stage_classifier_grp["TPR_min"];
-            stage_classifier->n_total = stage_classifier_grp["n_total"];
-            stage_classifier->n_pos = stage_classifier_grp["n_pos"];
-            stage_classifier->n_neg = stage_classifier_grp["n_neg"];
-            stage_classifier->FPR = stage_classifier_grp["FPR"];
-            stage_classifier->TPR = stage_classifier_grp["TPR"];
             stage_classifier->theta = stage_classifier_grp["theta"];
 
             shared_ptr<GentleAdaboost> gentle_adaboost = static_pointer_cast<GentleAdaboost>(stage_classifier);
-
-            gentle_adaboost->total_AUC_score = stage_classifier_grp["total_AUC_score"];
-            gentle_adaboost->sample_num = stage_classifier_grp["sample_num"];
-            gentle_adaboost->max_iters = stage_classifier_grp["max_iters"];
 
             Setting& weak_classifiers_lst = stage_classifier_grp["weak_classifiers"];
 
