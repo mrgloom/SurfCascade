@@ -68,7 +68,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                 }
                 if (prob->bias != 0)
                 {
-                    prob->x[i][j].index = j;
+                    prob->x[i][j].index = j + 1;
                     prob->x[i][j].value = prob->bias;
                     ++j;
                 }
@@ -84,7 +84,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
                 }
                 if (prob->bias != 0)
                 {
-                    prob->x[i + sample_num][j].index = j;
+                    prob->x[i + sample_num][j].index = j + 1;
                     prob->x[i + sample_num][j].value = prob->bias;
                     ++j;
                 }

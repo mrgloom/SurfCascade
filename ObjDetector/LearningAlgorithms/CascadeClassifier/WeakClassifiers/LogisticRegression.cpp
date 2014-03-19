@@ -42,13 +42,13 @@ double LogisticRegression::Predict(vector<double>& x)
     int i;
     for (i = 0; i < x.size(); i++)
     {
-        fn[i].index = i;
+        fn[i].index = i + 1;
         fn[i].value = x[i];
     }
     if (model_->bias > 0)
     {
-        fn[i].index = i;
-        fn[i].value = 1;
+        fn[i].index = i + 1;
+        fn[i].value = model_->bias;
         ++i;
     }
     fn[i].index = -1;
