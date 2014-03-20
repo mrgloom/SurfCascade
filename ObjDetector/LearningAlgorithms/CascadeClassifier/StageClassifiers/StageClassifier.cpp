@@ -24,7 +24,7 @@ void StageClassifier::SearchTheta(vector<vector<vector<double>>>& X, vector<bool
     {
         TPR = count_if(probs.begin(), probs.begin() + whole_n_pos, bind2nd(greater_equal<double>(), threshhold)) / (double)whole_n_pos;
         if (TPR >= TPR_min)
-            break; //TODO: what if break not execute?
+            break;
     }
 
     /* get corresponding theta and FPR */
