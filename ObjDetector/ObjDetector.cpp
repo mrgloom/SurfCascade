@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
         string filepath = "D:/facedata/Detect/1.jpg";
-        Rect win(0, 0, 300, 300);
+        int length = 300;
+        Rect win(0, 0, length, length);
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
