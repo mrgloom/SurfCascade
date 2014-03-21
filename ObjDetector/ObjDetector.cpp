@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
-        string prefix_path = "D:/FaceData/custom/";
+        string prefix_path = "D:/FaceData/Custom/";
         string pos_file("pos_viola.list");
         string neg_file("neg.list");
 
@@ -68,8 +68,8 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/facedata/Detect/8.jpg";
-        int length = 220;
+        string filepath = "D:/FaceData/Custom/Detect/8.jpg";
+        int length = 150;
         Rect win(0, 0, length, length);
 
         /* extract patches */
