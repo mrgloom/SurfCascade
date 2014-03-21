@@ -36,6 +36,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
 
         if (!dense_surf_feature_extractor.FillNegSamples(patches, X, n_total, *this, i == 0))
             break;
+        LOG_INFO_NN(endl);
 
         shared_ptr<StageClassifier> stage_classifier(new GentleAdaboost(TPR_min_perstage));
 

@@ -16,6 +16,7 @@ using cv::Mat;
 using cv::Size;
 using cv::Rect;
 using std::ifstream;
+using std::flush;
 
 const Size DenseSURFFeatureExtractor::shapes[3] = { Size(2, 2), Size(1, 4), Size(4, 1) };
 
@@ -149,7 +150,10 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
                 ExtractFeatures(new_patches, features_img);
 
                 if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                {
                     features_all.push_back(features_img);
+                    LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                }
 
                 if (features_all.size() == n_total)
                     return true;
