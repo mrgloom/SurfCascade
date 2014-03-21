@@ -2,6 +2,7 @@
 #include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
 #include "LOG.h"
 #include "Model.h"
+#include <opencv2/opencv.hpp>
 #include <windows.h>
 #include <vector>
 #include <array>
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
         string prefix_path = "D:/FaceData/custom/";
-        string pos_file("pos_viola_all.list");
+        string pos_file("pos_viola.list");
         string neg_file("neg.list");
 
         /* extract patches */
@@ -67,8 +68,8 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/facedata/Detect/1.jpg";
-        int length = 300;
+        string filepath = "D:/facedata/Detect/8.jpg";
+        int length = 220;
         Rect win(0, 0, length, length);
 
         /* extract patches */
@@ -106,9 +107,10 @@ int main(int argc, char *argv[])
         /* prepare showing image */
         Mat img_rgb(img.size(), CV_8UC3);
         cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
-        //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
 
         /* scan with varying windows */
+        vector<Rect> wins;
+
         cout << "Scanning with varying windows..." << endl;
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
@@ -124,20 +126,18 @@ int main(int argc, char *argv[])
 
                     if (cascade_classifier.Predict2(features_win))
                     {
-                        //cout << "Detected: " << win << endl;
+                        wins.push_back(win);
                         rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                     }
-
-                    //Mat img_tmp = img_rgb.clone();
-                    //rectangle(img_tmp, win, cv::Scalar(0, 255, 255), 1);
-                    //cv::imshow("Result", img_tmp);
-                    //cv::waitKey(100);
                 }
             }
         }
         cout << "Over." << endl;
 
-        //cv::destroyWindow("Result");
+        groupRectangles(wins, 2, 0.2);
+        for (int i = 0; i < wins.size(); i++)
+            rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
+
         cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
         cv::imshow("Result", img_rgb);
         cv::waitKey(0);
