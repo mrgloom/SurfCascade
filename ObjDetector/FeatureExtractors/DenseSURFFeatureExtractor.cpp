@@ -194,7 +194,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filter
                 d = -img_padded.at<uchar>(y + 1, x - 1) + img_padded.at<uchar>(y - 1, x + 1);
                 break;
             }
-            img_filtered.at<uchar>(y - 1, x - 1) = abs(d) + d * (bin % 2 ? 1 : -1);
+            img_filtered.at<uchar>(y - 1, x - 1) = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
         }
     }
 }
