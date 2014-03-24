@@ -19,16 +19,16 @@ class CascadeClassifier
 {
     vector<shared_ptr<StageClassifier>> stage_classifiers;
     int max_stages_num = 10;
-    double FPR_target = 1e-6;
-    double TPR_min_perstage = 0.995;
+    float FPR_target = 1e-6f;
+    float TPR_min_perstage = 0.995f;
 
 public:
-    double FPR;
-    double TPR;
+    float FPR;
+    float TPR;
 
-    void Train(vector<vector<vector<double>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches);
-    bool Predict(vector<vector<double>>& x);
-    bool Predict2(vector<vector<vector<double>>>& x);
+    void Train(vector<vector<vector<float>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches);
+    bool Predict(vector<vector<float>>& x);
+    bool Predict2(vector<vector<vector<float>>>& x);
     void GetFittedPatchIndexes(vector<vector<int>>& patch_indexes);
     void Print();
     friend class Model;

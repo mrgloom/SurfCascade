@@ -74,26 +74,26 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
     }
 }
 
-void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win)
+void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win)
 {
     /* compute features */
     for (int i = 0; i < patches.size(); i++)
     {
-        vector<double> feature;
+        vector<float> feature;
         CalcFeature(patches[i], feature);
         features_win.push_back(feature);
     }
 }
 
-void DenseSURFFeatureExtractor::ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<double>>>& features_win)
+void DenseSURFFeatureExtractor::ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<float>>>& features_win)
 {
     for (int i = 0; i < patches.size(); i++)
     {
-        vector<vector<double>> features_win_perstage;
+        vector<vector<float>> features_win_perstage;
 
         for (int j = 0; j < patches[i].size(); j++)
         {
-            vector<double> feature;
+            vector<float> feature;
             CalcFeature(patches[i][j], feature);
             features_win_perstage.push_back(feature);
         }
@@ -102,7 +102,7 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const vector<vector<Rect>>& patc
     }
 }
 
-bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<double>>& features_img)
+bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<float>>& features_img)
 {
     string imgname;
 
@@ -126,7 +126,7 @@ bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& pat
     }
 }
 
-bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<double>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
+bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<float>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
 {
     string imgname;
 
@@ -144,7 +144,7 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
         {
             for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
             {
-                vector<vector<double>> features_img;
+                vector<vector<float>> features_img;
                 ProjectPatches(win, patches, new_patches);
 
                 ExtractFeatures(new_patches, features_img);
@@ -203,7 +203,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filter
     }
 }
 
-void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<double>& feature)
+void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& feature)
 {
     /* get separated blocks from patch */
     int cell_edge;
@@ -234,7 +234,7 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<double>& f
             s2 = sums[j].at<int>(rects[i].y + rects[i].height, rects[i].x);
             s3 = sums[j].at<int>(rects[i].y + rects[i].height, rects[i].x + rects[i].width);
             s = s3 - s2 - s1 + s0;
-            feature[i * n_bins + j] = s;
+            feature[i * n_bins + j] = (float)s;
         }
     }
 
@@ -242,13 +242,13 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<double>& f
     Normalization(feature);
 }
 
-void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
-    double norm;
-    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0) + DBL_EPSILON);
+void DenseSURFFeatureExtractor::Normalization(vector<float>& feature) {
+    float norm;
+    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
     for (int i = 0; i < feature.size(); i++)
         feature[i] /= norm;
 
-    double theta = 2 / sqrt(double(dim));
+    float theta = 2 / sqrt(float(dim));
     for (int i = 0; i < feature.size(); i++) {
         if (feature[i] > theta)
             feature[i] = theta;
@@ -256,14 +256,14 @@ void DenseSURFFeatureExtractor::Normalization(vector<double>& feature) {
             feature[i] = -theta;
     }
 
-    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0) + DBL_EPSILON);
+    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
     for (int i = 0; i < feature.size(); i++)
         feature[i] /= norm;
 }
 
 void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
 {
-    double scale = (double)win2.width / size.width; // both square
+    float scale = (float)win2.width / size.width; // both square
 
     for (int i = 0; i < patches1.size(); i++)
     {
@@ -290,7 +290,7 @@ void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vec
 
 void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<Rect>& patches1, vector<Rect>& patches2)
 {
-    double scale = (double)win2.width / size.width; // both square
+    float scale = (float)win2.width / size.width; // both square
 
     for (int i = 0; i < patches1.size(); i++)
     {

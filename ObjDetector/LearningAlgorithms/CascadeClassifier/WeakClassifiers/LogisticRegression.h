@@ -21,7 +21,7 @@ public:
 
     LogisticRegression(int patch_index);
     void Train(problem* prob);
-    double Predict(vector<double>& x);
+    float Predict(vector<float>& x);
     friend class Model;
 };
 

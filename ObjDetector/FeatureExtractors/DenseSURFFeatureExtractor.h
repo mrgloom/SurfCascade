@@ -30,8 +30,8 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     Mat sums[n_bins];
 
     void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
-    void CalcFeature(const Rect& patch, vector<double>& feature);
-    void Normalization(vector<double>& feature);
+    void CalcFeature(const Rect& patch, vector<float>& feature);
+    void Normalization(vector<float>& feature);
 
 public:
     string prefix_path;
@@ -42,10 +42,10 @@ public:
     void LoadFileList(string filename, string prefix_path, bool set_size);
     void IntegralImage(Mat img);
     void ExtractPatches(vector<Rect>& patches);
-    void ExtractFeatures(const vector<Rect>& patches, vector<vector<double>>& features_win);
-    void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<double>>>& features_win);
-    bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<double>>& features_img);
-    bool FillNegSamples(const vector<Rect>& patches, vector<vector<vector<double>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first);
+    void ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win);
+    void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<float>>>& features_win);
+    bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<float>>& features_img);
+    bool FillNegSamples(const vector<Rect>& patches, vector<vector<vector<float>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first);
     void ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2);
     void ProjectPatches(const Rect win2, const vector<Rect>& patches1, vector<Rect>& patches2);
 };

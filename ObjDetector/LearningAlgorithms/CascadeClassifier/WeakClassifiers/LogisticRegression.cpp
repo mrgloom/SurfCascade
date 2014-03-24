@@ -33,7 +33,7 @@ void LogisticRegression::Train(problem* prob)
         LOG_ERROR("liblinear check_parameter() error.");
 }
 
-double LogisticRegression::Predict(vector<double>& x)
+float LogisticRegression::Predict(vector<float>& x)
 {
     double prob_estimates[2];
 
@@ -57,5 +57,5 @@ double LogisticRegression::Predict(vector<double>& x)
 
     delete[] fn;
 
-    return prob_estimates[0];
+    return (float)prob_estimates[0];
 }

@@ -9,9 +9,9 @@ using std::shared_ptr;
 
 class StageClassifier
 {
-    double search_step = 0.01;
-    double auc_step = 0.05;
-    double TPR_min;
+    float search_step = 0.01f;
+    float auc_step = 0.05f;
+    float TPR_min;
 
 protected:
     int n_total;
@@ -19,17 +19,17 @@ protected:
     int n_neg;
 
 public:
-    double FPR;
-    double TPR;
-    double theta;
+    float FPR;
+    float TPR;
+    float theta;
 
-    StageClassifier(double TPR_min_perstage): TPR_min(TPR_min_perstage) {}
-    virtual void Train(vector<vector<vector<double>>>& X, vector<bool>& y) = 0;
-    virtual double Predict(vector<vector<double>>& x) = 0;
-    virtual double Predict2(vector<vector<double>>& x) = 0;
+    StageClassifier(float TPR_min_perstage): TPR_min(TPR_min_perstage) {}
+    virtual void Train(vector<vector<vector<float>>>& X, vector<bool>& y) = 0;
+    virtual float Predict(vector<vector<float>>& x) = 0;
+    virtual float Predict2(vector<vector<float>>& x) = 0;
     virtual void GetFittedPatchIndexes(vector<int>& patch_indexes) = 0;
-    double Evaluate(vector<vector<vector<double>>>& X, vector<bool>& y);
-    void SearchTheta(vector<vector<vector<double>>>& X, vector<bool>& y);
+    float Evaluate(vector<vector<vector<float>>>& X, vector<bool>& y);
+    void SearchTheta(vector<vector<vector<float>>>& X, vector<bool>& y);
     friend class Model;
 };
 

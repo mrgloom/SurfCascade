@@ -8,7 +8,7 @@ using std::ostream;
 using std::endl;
 
 /* parameter X: only positive samples(files) */
-void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches)
+void CascadeClassifier::Train(vector<vector<vector<float>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches)
 {
     assert(X.size() == y.size());
 
@@ -55,7 +55,7 @@ void CascadeClassifier::Train(vector<vector<vector<double>>>& X, vector<bool>& y
     LOG_INFO("\tCascade stages end");
 }
 
-bool CascadeClassifier::Predict(vector<vector<double>>& x)
+bool CascadeClassifier::Predict(vector<vector<float>>& x)
 {
     for (int i = 0; i < stage_classifiers.size(); i++)
     {
@@ -66,7 +66,7 @@ bool CascadeClassifier::Predict(vector<vector<double>>& x)
     return true;
 }
 
-bool CascadeClassifier::Predict2(vector<vector<vector<double>>>& x)
+bool CascadeClassifier::Predict2(vector<vector<vector<float>>>& x)
 {
     for (int i = 0; i < stage_classifiers.size(); i++)
     {

@@ -42,8 +42,8 @@ int main(int argc, char *argv[])
         dense_surf_feature_extractor.ExtractPatches(patches);
 
         /* extract features in positive samples */
-        vector<vector<vector<double>>> features_all;
-        vector<vector<double>> features_img;
+        vector<vector<vector<float>>> features_all;
+        vector<vector<float>> features_img;
 
         cout << "Extracting features in positive samples..." << endl;
         while (dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_img))
@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                 {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
 
-                    vector<vector<vector<double>>> features_win;
+                    vector<vector<vector<float>>> features_win;
 
                     dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
 

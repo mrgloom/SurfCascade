@@ -8,7 +8,7 @@
 using std::count;
 using std::sort;
 
-void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
+void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
 {
     assert(X.size() == y.size());
 
@@ -19,8 +19,8 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
     assert(n_pos == n_neg);
 
     /* normalize initial weights */
-    vector<double> weights(n_pos, 1.0 / n_pos);
-    vector<double> weights_neg(n_neg, 1.0 / n_neg);
+    vector<float> weights(n_pos, 1.0f / n_pos);
+    vector<float> weights_neg(n_neg, 1.0f / n_neg);
     weights.insert(weights.end(), weights_neg.begin(), weights_neg.end());
 
     /* boosting */
@@ -39,14 +39,14 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
         
         /* parallel for each patch, train a weak classifier */
         shared_ptr<LogisticRegression> best_weak_classifier;
-        double curr_AUC_score;
-        double best_AUC_score = 0;
+        float curr_AUC_score;
+        float best_AUC_score = 0;
 
         int patches_num = (int)X[0].size();
         for (int k = 0; k < patches_num; k++)
         {
             /* get weak classifier's training set */
-            vector<double> feature;
+            vector<float> feature;
 
             problem* prob = new problem;
             prob->l = sample_num * 2;
@@ -105,7 +105,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
             ///* test on training set */
             //#if SETLEVEL == DEBUG_LEVEL
             //int TP = 0, TN = 0;
-            //double prob;
+            //float prob;
             //for (int i = 0; i < samples_X.size(); i++)
             //{
             //    prob = weak_classifier->Predict(samples_X[i]);
@@ -116,7 +116,7 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
             //}
             //LOG_DEBUG_NN("\t\tWeak classifier: ");
             //LOG_DEBUG_NN("TP = " << TP << '/' << samples_y.size() / 2 << ", TN = " << TN << '/' << samples_y.size() / 2);
-            //LOG_DEBUG(", Result: " << (double)(TP + TN) / samples_y.size());
+            //LOG_DEBUG(", Result: " << (float)(TP + TN) / samples_y.size());
             //#endif
 
             /* evaluate on the whole training set to obtain the AUC score */
@@ -155,9 +155,9 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
             total_AUC_score = best_AUC_score;
 
         /* update samples weights */
-        vector<double> old_weights(weights);
-        double sum_weights_pos = 0;
-        double sum_weights_neg = 0;
+        vector<float> old_weights(weights);
+        float sum_weights_pos = 0;
+        float sum_weights_neg = 0;
 
         for (int i = 0; i < n_total; i++)
         {
@@ -186,9 +186,9 @@ void GentleAdaboost::Train(vector<vector<vector<double>>>& X, vector<bool>& y)
     }
 }
 
-double GentleAdaboost::Predict(vector<vector<double>>& x)
+float GentleAdaboost::Predict(vector<vector<float>>& x)
 {
-    double sum = 0, prob;
+    float sum = 0, prob;
 
     for (int i = 0; i < weak_classifiers.size(); i++)
     {
@@ -200,11 +200,11 @@ double GentleAdaboost::Predict(vector<vector<double>>& x)
     return prob;
 }
 
-double GentleAdaboost::Predict2(vector<vector<double>>& x)
+float GentleAdaboost::Predict2(vector<vector<float>>& x)
 {
     assert(weak_classifiers.size() == x.size());
 
-    double sum = 0, prob;
+    float sum = 0, prob;
 
     for (int i = 0; i < weak_classifiers.size(); i++)
     {
