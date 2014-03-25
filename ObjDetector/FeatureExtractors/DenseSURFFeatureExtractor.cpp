@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <numeric>
+#include <xmmintrin.h>
 
 using std::cout;
 using std::endl;
@@ -63,14 +64,32 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 {
     Mat img_padded;
     Mat img_filtered(img.rows, img.cols, CV_8UC1);
+    vector<Mat> sumvec(n_bins);
+
+    sumtab = new F256Dat*[img.rows + 1];
+    for (int i = 0; i < img.rows + 1; i++)
+        sumtab[i] = new F256Dat[img.cols + 1];
 
     /* calculate integral image */
     copyMakeBorder(img, img_padded, 1, 1, 1, 1, cv::BORDER_REPLICATE);
 
     for (int bin = 0; bin < n_bins; bin++) {
         T2bFilter(img_padded, img_filtered, bin);
-        sums[bin].create(img.rows + 1, img.cols + 1, CV_32SC1);
-        integral(img_filtered, sums[bin]);
+        sumvec[bin].create(img.rows + 1, img.cols + 1, CV_32FC1);
+        integral(img_filtered, sumvec[bin], CV_32FC1);
+    }
+
+    //__declspec(align(16))
+    Mat sum;
+    merge(sumvec, sum);
+
+    for (int i = 0; i < img.rows + 1; i++)
+    {
+        for (int j = 0; j < img.cols + 1; j++)
+        {
+            sumtab[i][j].xmm_f1 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8);
+            sumtab[i][j].xmm_f2 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8 + 4);
+        }
     }
 }
 
@@ -159,6 +178,10 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
                     return true;
             }
         }
+
+        for (int i = 0; i < img.rows + 1; i++)
+            delete[] sumtab[i];
+        delete[] sumtab;
     }
 
     LOG_WARNING("\tRunning out of negative samples.");
@@ -223,19 +246,15 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     }
 
     /* calculate feature value using integral image*/
-    int s0, s1, s2, s3, s;
-
     feature.resize(dim);
 
     for (int i = 0; i < n_cells; i++) {
-        for (int j = 0; j < n_bins; j++) {
-            s0 = sums[j].at<int>(rects[i].y, rects[i].x);
-            s1 = sums[j].at<int>(rects[i].y, rects[i].x + rects[i].width);
-            s2 = sums[j].at<int>(rects[i].y + rects[i].height, rects[i].x);
-            s3 = sums[j].at<int>(rects[i].y + rects[i].height, rects[i].x + rects[i].width);
-            s = s3 - s2 - s1 + s0;
-            feature[i * n_bins + j] = (float)s;
-        }
+        _mm_storeu_ps(feature.data() + i * 8, _mm_sub_ps(
+            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f1),
+            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f1)));
+        _mm_storeu_ps(feature.data() + i * 8 + 4, _mm_sub_ps(
+            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f2),
+            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f2)));
     }
 
     /* normalization */

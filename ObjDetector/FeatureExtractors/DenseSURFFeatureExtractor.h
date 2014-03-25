@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <xmmintrin.h>
 
 using cv::Size;
 using cv::Mat;
@@ -18,6 +19,14 @@ using std::ifstream;
 
 class CascadeClassifier;
 
+struct F256Dat
+{
+    __m128 xmm_f1;
+    __m128 xmm_f2;
+};
+
+typedef cv::Vec<float, 8> Vec8f;
+
 class DenseSURFFeatureExtractor : public FeatureExtractor
 {
     static const Size shapes[3];
@@ -27,7 +36,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const int min_cell_edge = 4;
 
     ifstream filestream;
-    Mat sums[n_bins];
+    F256Dat** sumtab;
 
     void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
     void CalcFeature(const Rect& patch, vector<float>& feature);
