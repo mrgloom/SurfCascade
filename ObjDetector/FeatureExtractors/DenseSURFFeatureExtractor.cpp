@@ -27,19 +27,22 @@ DenseSURFFeatureExtractor::~DenseSURFFeatureExtractor()
 
 void DenseSURFFeatureExtractor::LoadFileList(string filename, string prefix_path, bool set_size)
 {
-    this->prefix_path = prefix_path;
+    ifstream filestream;
+    string imgname;
 
+    this->prefix_path = prefix_path;
     filestream.open(prefix_path + filename);
+
+    imgnames.clear();
+    while (getline(filestream, imgname))
+        imgnames.push_back(imgname);
+
+    filestream.close();
 
     if (set_size)
     {
-        string imgname;
         Mat img;
-
-        filestream >> imgname;
-        filestream.seekg(0, filestream.beg);
-
-        img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
+        img = imread(prefix_path + imgnames[0], cv::IMREAD_GRAYSCALE);
         size = Size(img.cols, img.rows);
     }
 }
@@ -123,38 +126,34 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const vector<vector<Rect>>& patc
 
 bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<float>>& features_img)
 {
-    string imgname;
+    static int i = 0;
 
     features_img.clear();
 
-    if (filestream >> imgname)
+    if (i < imgnames.size())
     {
-        Mat img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
+        Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
         assert(img.cols == size.width && img.rows == size.height);
 
         IntegralImage(img);
         ExtractFeatures(patches, features_img);
 
+        i++;
         return true;
     }
     else
-    {
-        filestream.close();
-        filestream.clear();
         return false;
-    }
 }
 
 bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<float>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
 {
-    string imgname;
-
+    static int i = 0;
     vector<Rect> new_patches(patches);
 
-    while (getline(filestream, imgname))
+    for (; i < imgnames.size(); i++)
     {
-        Mat img = imread(prefix_path + imgname, cv::IMREAD_GRAYSCALE);
-        LOG_DEBUG("\tReading image: " << imgname << ", features_all.size() = " << features_all.size());
+        Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
+        LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
 
         IntegralImage(img);
 
@@ -179,8 +178,8 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
             }
         }
 
-        for (int i = 0; i < img.rows + 1; i++)
-            delete[] sumtab[i];
+        for (int j = 0; j < img.rows + 1; j++)
+            delete[] sumtab[j];
         delete[] sumtab;
     }
 

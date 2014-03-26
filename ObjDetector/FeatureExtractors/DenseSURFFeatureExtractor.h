@@ -35,7 +35,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const int step = 2;
     static const int min_cell_edge = 4;
 
-    ifstream filestream;
+    vector<string> imgnames;
     F256Dat** sumtab;
 
     void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
