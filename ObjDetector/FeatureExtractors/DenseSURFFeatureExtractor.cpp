@@ -147,44 +147,57 @@ bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& pat
 
 bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<float>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
 {
-    static int i = 0;
+    static int idx = 0;
     vector<Rect> new_patches(patches);
+    bool done = false;
 
-    for (; i < imgnames.size(); i++)
+#pragma omp for schedule(dynamic)
+    for (int i = idx; i < imgnames.size(); i++)
     {
-        Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
-        LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
-
-        IntegralImage(img);
-
-        Rect win(0, 0, size.width, size.height);
-        for (win.y = 0; win.y + win.height <= img.size().height; win.y += win.height)
+        if (!done)
         {
-            for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
+            Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
+            LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
+
+            IntegralImage(img);
+
+            Rect win(0, 0, size.width, size.height);
+            for (win.y = 0; win.y + win.height <= img.size().height; win.y += win.height)
             {
-                vector<vector<float>> features_img;
-                ProjectPatches(win, patches, new_patches);
-
-                ExtractFeatures(new_patches, features_img);
-
-                if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
                 {
-                    features_all.push_back(features_img);
-                    LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                    vector<vector<float>> features_img;
+
+                    ProjectPatches(win, patches, new_patches);
+                    ExtractFeatures(new_patches, features_img);
+
+                    if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                    {
+#pragma omp critical
+                        if (features_all.size() < n_total)
+                        {
+                            features_all.push_back(features_img);
+                            LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                        }
+                    }
+
+                    if (features_all.size() == n_total)
+                    {
+                        done = true;
+                        idx = i;
+                    }
                 }
-
-                if (features_all.size() == n_total)
-                    return true;
             }
-        }
 
-        for (int j = 0; j < img.rows + 1; j++)
-            delete[] sumtab[j];
-        delete[] sumtab;
+            for (int j = 0; j < img.rows + 1; j++)
+                delete[] sumtab[j];
+            delete[] sumtab;
+        }
     }
 
-    LOG_WARNING("\tRunning out of negative samples.");
-    return false;
+    if (!done)
+        LOG_WARNING("\tRunning out of negative samples.");
+    return done;
 }
 
 void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin)
