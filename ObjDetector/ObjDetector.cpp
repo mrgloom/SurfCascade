@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
         string filepath = "D:/FaceData/Custom/Detect/8.jpg";
-        int length = 140;
+        int length = 70;
         Rect win(0, 0, length, length);
 
         /* extract patches */
@@ -120,6 +120,8 @@ int main(int argc, char *argv[])
         cout << "Scanning with varying windows..." << endl;
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
+            int step = win.width > 20 ? win.width / 20 : 1;
+
             for (win.y = 0; win.y + win.height <= img.size().height; win.y += 2)
             {
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += 2)
