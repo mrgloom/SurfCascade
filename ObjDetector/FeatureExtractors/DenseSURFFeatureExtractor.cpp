@@ -100,35 +100,19 @@ void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vec
 {
     /* compute features */
     for (int i = 0; i < patches.size(); i++)
-    {
-        vector<float> feature;
-        CalcFeature(patches[i], feature);
-        features_win.push_back(feature);
-    }
+        CalcFeature(patches[i], features_win[i]);
 }
 
 void DenseSURFFeatureExtractor::ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<float>>>& features_win)
 {
     for (int i = 0; i < patches.size(); i++)
-    {
-        vector<vector<float>> features_win_perstage;
-
         for (int j = 0; j < patches[i].size(); j++)
-        {
-            vector<float> feature;
-            CalcFeature(patches[i][j], feature);
-            features_win_perstage.push_back(feature);
-        }
-
-        features_win.push_back(features_win_perstage);
-    }
+            CalcFeature(patches[i][j], features_win[i][j]);
 }
 
 bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<float>>& features_img)
 {
     static int i = 0;
-
-    features_img.clear();
 
     if (i < imgnames.size())
     {
@@ -149,6 +133,8 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
 {
     static int idx = 0;
     vector<Rect> new_patches(patches);
+    vector<vector<float>> features_img(new_patches.size(), vector<float>(dim));
+
     bool done = false;
 
 #pragma omp for schedule(dynamic)
@@ -166,8 +152,6 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
             {
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
                 {
-                    vector<vector<float>> features_img;
-
                     ProjectPatches(win, patches, new_patches);
                     ExtractFeatures(new_patches, features_img);
 
@@ -258,8 +242,6 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     }
 
     /* calculate feature value using integral image*/
-    feature.resize(dim);
-
     for (int i = 0; i < n_cells; i++) {
         _mm_storeu_ps(feature.data() + i * 8, _mm_sub_ps(
             _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f1),

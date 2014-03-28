@@ -42,12 +42,12 @@ int main(int argc, char *argv[])
         dense_surf_feature_extractor.ExtractPatches(patches);
 
         /* extract features in positive samples */
-        vector<vector<vector<float>>> features_all;
-        vector<vector<float>> features_img;
+        vector<vector<vector<float>>> features_all(dense_surf_feature_extractor.imgnames.size(), vector<vector<float>>(patches.size(), vector<float>(dense_surf_feature_extractor.dim)));
 
         cout << "Extracting features in positive samples..." << endl;
-        while (dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_img))
-            features_all.push_back(features_img);
+        int i = 0;
+        while (dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_all[i++]))
+            ;
 
         vector<bool> labels(features_all.size(), true);
 
@@ -110,6 +110,12 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         vector<Rect> wins;
+        vector<vector<vector<float>>> features_win(patches.size());
+
+        for (int i = 0; i < features_win.size(); i++)
+        {
+            features_win[i].resize(patches[i].size(), vector<float>(dense_surf_feature_extractor.dim));
+        }
 
         cout << "Scanning with varying windows..." << endl;
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
@@ -119,9 +125,6 @@ int main(int argc, char *argv[])
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += 2)
                 {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
-
-                    vector<vector<vector<float>>> features_win;
-
                     dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
 
                     if (cascade_classifier.Predict2(features_win))
