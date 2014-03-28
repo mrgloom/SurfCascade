@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     if (strcmp(argv[1], "--train") == 0 || strcmp(argv[1], "-t") == 0)
     {
         string prefix_path = "D:/FaceData/Custom/";
-        string pos_file("pos_viola.list");
+        string pos_file("facepos.list");
         string neg_file("neg.list");
 
         /* extract patches */
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
         string filepath = "D:/FaceData/Custom/Detect/8.jpg";
-        int length = 150;
+        int length = 140;
         Rect win(0, 0, length, length);
 
         /* extract patches */
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
         vector<Rect> dense_patches;
 
         cout << "Extracting patches..." << endl;
-        dense_surf_feature_extractor.size = Size(24, 24); // TODO
+        dense_surf_feature_extractor.size = Size(40, 40); // TODO
         dense_surf_feature_extractor.ExtractPatches(dense_patches);
 
         /* get fitted patches */
