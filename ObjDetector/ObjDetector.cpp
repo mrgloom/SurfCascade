@@ -122,17 +122,22 @@ int main(int argc, char *argv[])
         {
             int step = win.width > 20 ? win.width / 20 : 1;
 
-            for (win.y = 0; win.y + win.height <= img.size().height; win.y += 2)
+            #pragma omp parallel for firstprivate(win, patches, features_win)
+            for (int y = 0; y <= img.size().height - win.height; y += 2)
             {
-                for (win.x = 0; win.x + win.width <= img.size().width; win.x += 2)
+                win.y = y;
+                for (win.x = 0; win.x <= img.size().width + win.width; win.x += 2)
                 {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
                     dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
 
                     if (cascade_classifier.Predict2(features_win))
                     {
-                        wins.push_back(win);
-                        rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
+                        #pragma omp critical
+                        {
+                            wins.push_back(win);
+                            rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
+                        }
                     }
                 }
             }
