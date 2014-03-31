@@ -66,15 +66,18 @@ bool CascadeClassifier::Predict(vector<vector<float>>& x)
     return true;
 }
 
-bool CascadeClassifier::Predict2(vector<vector<vector<float>>>& x)
+bool CascadeClassifier::Predict2(vector<vector<vector<float>>>& x, double& score)
 {
-    for (int i = 0; i < stage_classifiers.size(); i++)
+    int i;
+    for (i = 0; i < stage_classifiers.size(); i++)
     {
-        if (stage_classifiers[i]->Predict2(x[i]) < stage_classifiers[i]->theta)
-            return false;
+        if ((score = stage_classifiers[i]->Predict2(x[i])) < stage_classifiers[i]->theta)
+            break;
     }
 
-    return true;
+    score += i;
+
+    return i == stage_classifiers.size();
 }
 
 void CascadeClassifier::GetFittedPatchIndexes(vector<vector<int>>& patch_indexes)

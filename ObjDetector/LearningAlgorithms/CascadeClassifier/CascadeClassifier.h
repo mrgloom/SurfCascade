@@ -17,7 +17,6 @@ class DenseSURFFeatureExtractor;
 
 class CascadeClassifier
 {
-    vector<shared_ptr<StageClassifier>> stage_classifiers;
     int max_stages_num = 10;
     float FPR_target = 1e-6f;
     float TPR_min_perstage = 0.995f;
@@ -25,10 +24,11 @@ class CascadeClassifier
 public:
     float FPR;
     float TPR;
+    vector<shared_ptr<StageClassifier>> stage_classifiers;
 
     void Train(vector<vector<vector<float>>>& X, vector<bool>& y, DenseSURFFeatureExtractor& dense_surf_feature_extractor, string neg_file, const vector<Rect>& patches);
     bool Predict(vector<vector<float>>& x);
-    bool Predict2(vector<vector<vector<float>>>& x);
+    bool Predict2(vector<vector<vector<float>>>& x, double& score);
     void GetFittedPatchIndexes(vector<vector<int>>& patch_indexes);
     void Print();
     friend class Model;

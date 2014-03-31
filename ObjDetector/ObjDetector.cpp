@@ -111,6 +111,7 @@ int main(int argc, char *argv[])
         /* scan with varying windows */
         vector<Rect> wins;
         vector<vector<vector<float>>> features_win(patches.size());
+        int step = win.width > 20 ? win.width / 20 : 1;
 
         for (int i = 0; i < features_win.size(); i++)
         {
@@ -120,18 +121,18 @@ int main(int argc, char *argv[])
         cout << "Scanning with varying windows..." << endl;
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
         {
-            int step = win.width > 20 ? win.width / 20 : 1;
-
             #pragma omp parallel for firstprivate(win, patches, features_win)
-            for (int y = 0; y <= img.size().height - win.height; y += 2)
+            for (int y = 0; y <= img.size().height - win.height; y += step)
             {
                 win.y = y;
-                for (win.x = 0; win.x <= img.size().width + win.width; win.x += 2)
+                int multi = 1;
+                for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
                 {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
                     dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
 
-                    if (cascade_classifier.Predict2(features_win))
+                    double score;
+                    if (cascade_classifier.Predict2(features_win, score))
                     {
                         #pragma omp critical
                         {
@@ -139,6 +140,8 @@ int main(int argc, char *argv[])
                             rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                         }
                     }
+
+                    multi = (score < cascade_classifier.stage_classifiers.size() / 2) ? 2 : 1;
                 }
             }
         }
