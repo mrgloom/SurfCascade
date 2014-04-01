@@ -256,10 +256,10 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
 }
 
 void DenseSURFFeatureExtractor::Normalization(vector<float>& feature) {
-    float norm;
-    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
+    float divisor;
+    divisor = 1 / sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
     for (int i = 0; i < feature.size(); i++)
-        feature[i] /= norm;
+        feature[i] *= divisor;
 
     float theta = 2 / sqrt(float(dim));
     for (int i = 0; i < feature.size(); i++) {
@@ -269,9 +269,9 @@ void DenseSURFFeatureExtractor::Normalization(vector<float>& feature) {
             feature[i] = -theta;
     }
 
-    norm = sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
+    divisor = 1 / sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
     for (int i = 0; i < feature.size(); i++)
-        feature[i] /= norm;
+        feature[i] *= divisor;
 }
 
 void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
