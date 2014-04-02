@@ -252,26 +252,34 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     }
 
     /* normalization */
-    Normalization(feature);
-}
-
-void DenseSURFFeatureExtractor::Normalization(vector<float>& feature) {
+    float norm;
+    float norm_theta;
     float divisor;
-    divisor = 1 / sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
-    for (int i = 0; i < feature.size(); i++)
-        feature[i] *= divisor;
+    float sum = FLT_EPSILON;
+    float* p0 = feature.data();
+    float* p1 = feature.data() + dim;
+    float* p = p0;
 
-    float theta = 2 / sqrt(float(dim));
-    for (int i = 0; i < feature.size(); i++) {
-        if (feature[i] > theta)
-            feature[i] = theta;
-        else if (feature[i] < -theta)
-            feature[i] = -theta;
+    for (p = p0; p != p1; p++) {
+        sum += *p * *p;
     }
+    norm = sqrt(sum);
+    norm_theta = norm * theta;
 
-    divisor = 1 / sqrt(inner_product(feature.begin(), feature.end(), feature.begin(), 0.0f) + FLT_EPSILON);
-    for (int i = 0; i < feature.size(); i++)
-        feature[i] *= divisor;
+    sum = FLT_EPSILON;
+    for (p = p0; p != p1; p++) {
+        if (*p > norm_theta)
+            *p = norm_theta;
+        else if (*p < -norm_theta)
+            *p = -norm_theta;
+
+        sum += *p * *p;
+    }
+    norm = sqrt(sum);
+
+    divisor = 1 / norm;
+    for (p = p0; p != p1; p++)
+        *p *= divisor;
 }
 
 void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
