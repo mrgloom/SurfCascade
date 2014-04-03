@@ -122,13 +122,12 @@ int main(int argc, char *argv[])
         Mat img = imread(filepaths[0], cv::IMREAD_GRAYSCALE);
         dense_surf_feature_extractor.IntegralImage(img);
 
+        /* prepare showing image */
+        Mat img_rgb(img.size(), CV_8UC3);
+        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+
         for (int i = 0; i < filepaths.size(); i++)
         {
-
-            /* prepare showing image */
-            Mat img_rgb(img.size(), CV_8UC3);
-            cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
-
             cout << "Scanning with varying windows..." << endl;
             for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
             {
@@ -140,30 +139,10 @@ int main(int argc, char *argv[])
                     {
                         //dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
                         dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
-
-                        //double score;
-                        //if (cascade_classifier.Predict2(features_win, score))
-                        //{
-                        //    #pragma omp critical
-                        //    {
-                        //        wins.push_back(win);
-                        //        rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
-                        //    }
-                        //}
-
-                        //multi = (score < cascade_classifier.stage_classifiers.size() / 2) ? 2 : 1;
                     }
                 }
             }
             cout << "Over." << endl;
-
-            //groupRectangles(wins, 2, 0.2);
-            //for (int i = 0; i < wins.size(); i++)
-            //    rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
-
-            //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
-            //cv::imshow("Result", img_rgb);
-            //cv::waitKey(0);
         }
     }
 
