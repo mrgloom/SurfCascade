@@ -128,21 +128,21 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < filepaths.size(); i++)
         {
-            cout << "Scanning with varying windows..." << endl;
-            for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        cout << "Scanning with varying windows..." << endl;
+        for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        {
+            for (int y = 0; y <= img.size().height - win.height; y += step)
             {
-                for (int y = 0; y <= img.size().height - win.height; y += step)
+                win.y = y;
+                int multi = 1;
+                for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
                 {
-                    win.y = y;
-                    int multi = 1;
-                    for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
-                    {
-                        //dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
-                        dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
-                    }
+                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
+                    dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
                 }
             }
-            cout << "Over." << endl;
+        }
+        cout << "Over." << endl;
         }
     }
 
