@@ -7,6 +7,7 @@
 #include <vector>
 #include <array>
 #include <fstream>
+#include <ctime>
 
 using std::ifstream;
 using std::string;
@@ -118,32 +119,30 @@ int main(int argc, char *argv[])
         while (getline(fs, filepath))
             filepaths.push_back(prefix + filepath);
 
-        cout << "Calculating integral image..." << endl;
-        Mat img = imread(filepaths[0], cv::IMREAD_GRAYSCALE);
-        dense_surf_feature_extractor.IntegralImage(img);
-
-        /* prepare showing image */
-        Mat img_rgb(img.size(), CV_8UC3);
-        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
-
+        clock_t start = clock();
         for (int i = 0; i < filepaths.size(); i++)
         {
-        cout << "Scanning with varying windows..." << endl;
-        for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
-        {
-            for (int y = 0; y <= img.size().height - win.height; y += step)
-            {
-                win.y = y;
-                int multi = 1;
-                for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
-                {
-                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
-                    dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
-                }
-            }
+        cout << "Calculating integral image..." << i << endl;
+        Mat img = imread(filepaths[i], cv::IMREAD_GRAYSCALE);
+        dense_surf_feature_extractor.IntegralImage(img);
+
+        //cout << "Scanning with varying windows..." << endl;
+        //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        //{
+        //    for (int y = 0; y <= img.size().height - win.height; y += step)
+        //    {
+        //        win.y = y;
+        //        int multi = 1;
+        //        for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
+        //        {
+        //            dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
+        //            dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
+        //        }
+        //    }
+        //}
+        //cout << "Over." << endl;
         }
-        cout << "Over." << endl;
-        }
+        cout << "Execution time: " << (clock() - start) / (CLOCKS_PER_SEC / 1000) << " milliseconds." << endl;
     }
 
     return 0;
