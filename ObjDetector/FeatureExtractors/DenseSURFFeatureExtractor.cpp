@@ -65,7 +65,6 @@ void DenseSURFFeatureExtractor::ExtractPatches(vector<Rect>& patches)
 
 void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 {
-    Mat img_padded;
     Mat img_filtered(img.rows, img.cols, CV_8UC1);
     vector<Mat> sumvec(n_bins);
 
@@ -74,10 +73,8 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
         sumtab[i] = new F256Dat[img.cols + 1];
 
     /* calculate integral image */
-    copyMakeBorder(img, img_padded, 1, 1, 1, 1, cv::BORDER_REPLICATE);
-
     for (int bin = 0; bin < n_bins; bin++) {
-        T2bFilter(img_padded, img_filtered, bin);
+        T2bFilter(img, img_filtered, bin);
         sumvec[bin].create(img.rows + 1, img.cols + 1, CV_32FC1);
         integral(img_filtered, sumvec[bin], CV_32FC1);
     }
@@ -184,41 +181,57 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
     return done;
 }
 
-void DenseSURFFeatureExtractor::T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin)
+void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, Mat& grad, int bin)
 {
+    /*
+    * 0: |dx| - dx
+    * 1: |dx| + dx
+    * 2: |dy| - dy
+    * 3: |dy| + dy
+    * 4: |du| - du
+    * 5: |du| + du
+    * 6: |dv| - dv
+    * 7: |dv| + dv
+    */
     int d;
-    for (int y = 1; y < img_filtered.rows + 1; y++) {
-        for (int x = 1; x < img_filtered.cols + 1; x++) {
-            switch (bin) {
-                /*
-                * 0: |dx| - dx
-                * 1: |dx| + dx
-                * 2: |dy| - dy
-                * 3: |dy| + dy
-                * 4: |du| - du
-                * 5: |du| + du
-                * 6: |dv| - dv
-                * 7: |dv| + dv
-                */
-            case 0:
-            case 1:
-                d = -img_padded.at<uchar>(y, x - 1) + img_padded.at<uchar>(y, x + 1);
-                break;
-            case 2:
-            case 3:
-                d = -img_padded.at<uchar>(y - 1, x) + img_padded.at<uchar>(y + 1, x);
-                break;
-            case 4:
-            case 5:
-                d = -img_padded.at<uchar>(y - 1, x - 1) + img_padded.at<uchar>(y + 1, x + 1);
-                break;
-            case 6:
-            case 7:
-                d = -img_padded.at<uchar>(y + 1, x - 1) + img_padded.at<uchar>(y - 1, x + 1);
-                break;
+
+    switch (bin) {
+    case 0:
+    case 1:
+        for (int y = 0; y < grad.rows; y++) {
+            for (int x = 0; x < grad.cols; x++) {
+                d = -img.ptr(y)[x - (x > 0)] + img.ptr(y)[x + (x < grad.cols - 1)];
+                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
             }
-            img_filtered.at<uchar>(y - 1, x - 1) = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
         }
+        break;
+    case 2:
+    case 3:
+        for (int y = 0; y < grad.rows; y++) {
+            for (int x = 0; x < grad.cols; x++) {
+                d = -img.ptr(y - (y > 0))[x] + img.ptr(y + (y < grad.rows - 1))[x];
+                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
+            }
+        }
+        break;
+    case 4:
+    case 5:
+        for (int y = 0; y < grad.rows; y++) {
+            for (int x = 0; x < grad.cols; x++) {
+                d = -img.ptr(y - (y > 0))[x - (x > 0)] + img.ptr(y + (y < grad.rows - 1))[x + (x < grad.cols - 1)];
+                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
+            }
+        }
+        break;
+    case 6:
+    case 7:
+        for (int y = 0; y < grad.rows; y++) {
+            for (int x = 0; x < grad.cols; x++) {
+                d = -img.ptr(y + (y < grad.rows - 1))[x - (x > 0)] + img.ptr(y - (y > 0))[x + (x < grad.cols - 1)];
+                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
+            }
+        }
+        break;
     }
 }
 
