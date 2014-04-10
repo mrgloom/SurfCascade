@@ -7,7 +7,6 @@
 #include <vector>
 #include <array>
 #include <fstream>
-#include <ctime>
 
 using std::ifstream;
 using std::string;
@@ -101,6 +100,14 @@ int main(int argc, char *argv[])
         /* calculate integral image */
         vector<vector<Rect>> patches(fitted_patches);
 
+        cout << "Calculating integral image..." << endl;
+        Mat img = imread(filepath, cv::IMREAD_GRAYSCALE);
+        dense_surf_feature_extractor.IntegralImage(img);
+
+        /* prepare showing image */
+        Mat img_rgb(img.size(), CV_8UC3);
+        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+
         /* scan with varying windows */
         vector<Rect> wins;
         vector<vector<vector<float>>> features_win(patches.size());
@@ -111,38 +118,42 @@ int main(int argc, char *argv[])
             features_win[i].resize(patches[i].size(), vector<float>(dense_surf_feature_extractor.dim));
         }
 
-        string prefix = "D:/FaceData/Custom/640x480/";
-        string filelist = "filelist";
-        ifstream fs(prefix + filelist);
-        vector<string> filepaths;
-
-        while (getline(fs, filepath))
-            filepaths.push_back(prefix + filepath);
-
-        clock_t start = clock();
-        for (int i = 0; i < filepaths.size(); i++)
-        {
-        cout << "Calculating integral image..." << i << endl;
-        Mat img = imread(filepaths[i], cv::IMREAD_GRAYSCALE);
-        dense_surf_feature_extractor.IntegralImage(img);
-
-        //cout << "Scanning with varying windows..." << endl;
+        cout << "Scanning with varying windows..." << endl;
         //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
-        //{
-        //    for (int y = 0; y <= img.size().height - win.height; y += step)
-        //    {
-        //        win.y = y;
-        //        int multi = 1;
-        //        for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
-        //        {
-        //            dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
-        //            dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
-        //        }
-        //    }
-        //}
-        //cout << "Over." << endl;
+        {
+            #pragma omp parallel for firstprivate(win, patches, features_win)
+            for (int y = 0; y <= img.size().height - win.height; y += step)
+            {
+                win.y = y;
+                int multi = 1;
+                for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
+                {
+                    dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
+                    dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
+
+                    double score;
+                    if (cascade_classifier.Predict2(features_win, score))
+                    {
+                        #pragma omp critical
+                        {
+                            wins.push_back(win);
+                            rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
+                        }
+                    }
+
+                    multi = (score < cascade_classifier.stage_classifiers.size() / 2) ? 2 : 1;
+                }
+            }
         }
-        cout << "Execution time: " << (clock() - start) / (CLOCKS_PER_SEC / 1000) << " milliseconds." << endl;
+        cout << "Over." << endl;
+
+        groupRectangles(wins, 2, 0.2);
+        for (int i = 0; i < wins.size(); i++)
+            rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
+
+        cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
+        cv::imshow("Result", img_rgb);
+        cv::waitKey(0);
     }
 
     return 0;
