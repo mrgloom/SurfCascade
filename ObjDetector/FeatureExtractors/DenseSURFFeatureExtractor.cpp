@@ -244,8 +244,8 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         /* |dy| - dy, |dy| + dy */
         Ip = I - w;
         In = I + w;
-        G1 += sz;
-        G2 += sz;
+        G1 = grad + 2 * sz + y * w;
+        G2 = G1 + sz;
 
         if (y == 0) Ip += w;
         else if (y == h - 1) In -= w;
@@ -272,8 +272,8 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         /* |du| - du, |du| + du */
         Ip = I - w;
         In = I + w + 1;
-        G1 += sz;
-        G2 += sz;
+        G1 = grad + 4 * sz + y * w;
+        G2 = G1 + sz;
 
         if (y == 0) Ip += w;
         else if (y == h - 1) In -= w;
@@ -306,8 +306,8 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         /* |dv| - dv, |dv| + dv */
         Ip = I - w + 1;
         In = I + w;
-        G1 += sz;
-        G2 += sz;
+        G1 = grad + 6 * sz + y * w;
+        G2 = G1 + sz;
 
         if (y == 0) Ip += w;
         else if (y == h - 1) In -= w;
