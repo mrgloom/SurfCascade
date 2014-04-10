@@ -7,7 +7,6 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <xmmintrin.h>
 
 using cv::Size;
 using cv::Mat;
@@ -38,7 +37,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
 
     F256Dat** sumtab;
 
-    void T2bFilter(const Mat& img_padded, Mat& img_filtered, int bin);
+    void T2bFilter(const Mat& img, uchar *grad);
     void CalcFeature(const Rect& patch, vector<float>& feature);
 
 public:

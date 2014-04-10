@@ -5,7 +5,6 @@
 #include <string>
 #include <array>
 #include <numeric>
-#include <xmmintrin.h>
 
 using std::cout;
 using std::endl;
@@ -65,23 +64,25 @@ void DenseSURFFeatureExtractor::ExtractPatches(vector<Rect>& patches)
 
 void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 {
-    Mat img_filtered(img.rows, img.cols, CV_8UC1);
+    uchar *grad = new uchar[img.rows * img.cols * n_bins];
     vector<Mat> sumvec(n_bins);
+
+    /* calculate integral image */
+    T2bFilter(img, grad);
+
+    for (int bin = 0; bin < n_bins; bin++) {
+        Mat grad1(img.rows, img.cols, CV_8UC1, grad + bin * img.rows * img.cols);
+        integral(grad1, sumvec[bin], CV_32FC1);
+    }
+
+    //__declspec(align(16))
+
+    Mat sum;
+    merge(sumvec, sum);
 
     sumtab = new F256Dat*[img.rows + 1];
     for (int i = 0; i < img.rows + 1; i++)
         sumtab[i] = new F256Dat[img.cols + 1];
-
-    /* calculate integral image */
-    for (int bin = 0; bin < n_bins; bin++) {
-        T2bFilter(img, img_filtered, bin);
-        sumvec[bin].create(img.rows + 1, img.cols + 1, CV_32FC1);
-        integral(img_filtered, sumvec[bin], CV_32FC1);
-    }
-
-    //__declspec(align(16))
-    Mat sum;
-    merge(sumvec, sum);
 
     for (int i = 0; i < img.rows + 1; i++)
     {
@@ -91,6 +92,8 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
             sumtab[i][j].xmm_f2 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8 + 4);
         }
     }
+
+    delete grad;
 }
 
 void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win)
@@ -181,57 +184,158 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
     return done;
 }
 
-void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, Mat& grad, int bin)
-{
-    /*
-    * 0: |dx| - dx
-    * 1: |dx| + dx
-    * 2: |dy| - dy
-    * 3: |dy| + dy
-    * 4: |du| - du
-    * 5: |du| + du
-    * 6: |dv| - dv
-    * 7: |dv| + dv
-    */
-    int d;
+#define _mm_srli_epi8( _A, _Imm ) _mm_and_si128( _mm_set1_epi8((char)(0xFF >> _Imm)), _mm_srli_epi32( _A, _Imm ) )
 
-    switch (bin) {
-    case 0:
-    case 1:
-        for (int y = 0; y < grad.rows; y++) {
-            for (int x = 0; x < grad.cols; x++) {
-                d = -img.ptr(y)[x - (x > 0)] + img.ptr(y)[x + (x < grad.cols - 1)];
-                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
-            }
+void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
+{
+    int w = img.cols;
+    int h = img.rows;
+    int sz = w * h;
+
+    int d;
+    uchar *I;
+    uchar *Ip;
+    uchar *In;
+    uchar *G1;
+    uchar *G2;
+    __m128i _d;
+    __m128i *_Ip;
+    __m128i *_In;
+    __m128i *_G1;
+    __m128i *_G2;
+
+    int x;
+    int w_sse;
+
+    for (int y = 0; y < h; y++) {
+        I = (uchar *)img.ptr(y);
+
+        /* |dx| - dx, |dx| + dx */
+        Ip = I;
+        In = I + 1;
+        G1 = grad + y * w;
+        G2 = G1 + sz;
+
+        d = *In++ - *Ip;
+        *G1++ = (abs(d) - d) / 2;
+        *G2++ = (abs(d) + d) / 2;
+
+        _Ip = (__m128i *)Ip;
+        _In = (__m128i *)In;
+        _G1 = (__m128i *)G1;
+        _G2 = (__m128i *)G2;
+
+        w_sse = ((w - 1) >> 4) << 4;
+        for (x = 1; x < w_sse; x += 16)
+        {
+            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
         }
-        break;
-    case 2:
-    case 3:
-        for (int y = 0; y < grad.rows; y++) {
-            for (int x = 0; x < grad.cols; x++) {
-                d = -img.ptr(y - (y > 0))[x] + img.ptr(y + (y < grad.rows - 1))[x];
-                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
-            }
+        for (; x < w - 1; x++) {
+            d = In[x] - Ip[x];
+            G1[x] = (abs(d) - d) / 2;
+            G2[x] = (abs(d) + d) / 2;
         }
-        break;
-    case 4:
-    case 5:
-        for (int y = 0; y < grad.rows; y++) {
-            for (int x = 0; x < grad.cols; x++) {
-                d = -img.ptr(y - (y > 0))[x - (x > 0)] + img.ptr(y + (y < grad.rows - 1))[x + (x < grad.cols - 1)];
-                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
-            }
+        d = *In - *++Ip;
+        G1[x] = (abs(d) - d) / 2;
+        G2[x] = (abs(d) + d) / 2;
+
+        /* |dy| - dy, |dy| + dy */
+        Ip = I - w;
+        In = I + w;
+        G1 += sz;
+        G2 += sz;
+
+        if (y == 0) Ip += w;
+        else if (y == h - 1) In -= w;
+
+        _Ip = (__m128i *)Ip;
+        _In = (__m128i *)In;
+        _G1 = (__m128i *)G1;
+        _G2 = (__m128i *)G2;
+
+        w_sse = (w >> 4) << 4;
+        for (x = 0; x < w_sse; x += 16)
+        {
+            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
         }
-        break;
-    case 6:
-    case 7:
-        for (int y = 0; y < grad.rows; y++) {
-            for (int x = 0; x < grad.cols; x++) {
-                d = -img.ptr(y + (y < grad.rows - 1))[x - (x > 0)] + img.ptr(y - (y > 0))[x + (x < grad.cols - 1)];
-                grad.ptr(y)[x] = (abs(d) + d * (bin % 2 ? 1 : -1)) / 2;
-            }
+        for (; x < w; x++)
+        {
+            d = In[x] - Ip[x];
+            G1[x] = (abs(d) - d) / 2;
+            G2[x] = (abs(d) + d) / 2;
         }
-        break;
+
+        /* |du| - du, |du| + du */
+        Ip = I - w;
+        In = I + w + 1;
+        G1 += sz;
+        G2 += sz;
+
+        if (y == 0) Ip += w;
+        else if (y == h - 1) In -= w;
+
+        d = *In++ - *Ip;
+        *G1++ = (abs(d) - d) / 2;
+        *G2++ = (abs(d) + d) / 2;
+
+        _Ip = (__m128i *)Ip;
+        _In = (__m128i *)In;
+        _G1 = (__m128i *)G1;
+        _G2 = (__m128i *)G2;
+
+        w_sse = ((w - 1) >> 4) << 4;
+        for (x = 1; x < w_sse; x += 16)
+        {
+            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+        }
+        for (; x < w - 1; x++) {
+            d = In[x] - Ip[x];
+            G1[x] = (abs(d) - d) / 2;
+            G2[x] = (abs(d) + d) / 2;
+        }
+        d = *In - *++Ip;
+        G1[x] = (abs(d) - d) / 2;
+        G2[x] = (abs(d) + d) / 2;
+
+        /* |dv| - dv, |dv| + dv */
+        Ip = I - w + 1;
+        In = I + w;
+        G1 += sz;
+        G2 += sz;
+
+        if (y == 0) Ip += w;
+        else if (y == h - 1) In -= w;
+
+        d = *In - *Ip++;
+        *G1++ = (abs(d) - d) / 2;
+        *G2++ = (abs(d) + d) / 2;
+
+        _Ip = (__m128i *)Ip;
+        _In = (__m128i *)In;
+        _G1 = (__m128i *)G1;
+        _G2 = (__m128i *)G2;
+
+        w_sse = ((w - 1) >> 4) << 4;
+        for (x = 1; x < w_sse; x += 16)
+        {
+            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+        }
+        for (; x < w - 1; x++) {
+            d = In[x] - Ip[x];
+            G1[x] = (abs(d) - d) / 2;
+            G2[x] = (abs(d) + d) / 2;
+        }
+        d = *In - *++Ip;
+        G1[x] = (abs(d) - d) / 2;
+        G2[x] = (abs(d) + d) / 2;
     }
 }
 
