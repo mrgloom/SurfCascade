@@ -237,7 +237,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
             *G1++ = (abs(d) - d) / 2;
             *G2++ = (abs(d) + d) / 2;
         }
-        d = *In - *++Ip;
+        d = *--In - *Ip;
         *G1 = (abs(d) - d) / 2;
         *G2 = (abs(d) + d) / 2;
 
@@ -299,7 +299,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
             *G1++ = (abs(d) - d) / 2;
             *G2++ = (abs(d) + d) / 2;
         }
-        d = *In - *++Ip;
+        d = *--In - *Ip;
         *G1 = (abs(d) - d) / 2;
         *G2 = (abs(d) + d) / 2;
 
@@ -333,7 +333,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
             *G1++ = (abs(d) - d) / 2;
             *G2++ = (abs(d) + d) / 2;
         }
-        d = *++In - *Ip;
+        d = *In - *--Ip;
         *G1 = (abs(d) - d) / 2;
         *G2 = (abs(d) + d) / 2;
     }
