@@ -333,7 +333,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
             G1[x] = (abs(d) - d) / 2;
             G2[x] = (abs(d) + d) / 2;
         }
-        d = *In - *++Ip;
+        d = *++In - *Ip;
         G1[x] = (abs(d) - d) / 2;
         G2[x] = (abs(d) + d) / 2;
     }
