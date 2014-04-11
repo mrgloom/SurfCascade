@@ -220,18 +220,18 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         *G1++ = (abs(d) - d) / 2;
         *G2++ = (abs(d) + d) / 2;
 
-        _Ip = (__m128i *)Ip;
-        _In = (__m128i *)In;
-        _G1 = (__m128i *)G1;
-        _G2 = (__m128i *)G2;
+        _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
         w_sse = ((w - 1) >> 4) << 4;
-        for (x = 1; x < w_sse; x += 16, In += 16, Ip += 16)
+        for (x = 1; x < w_sse; x += 16)
         {
-            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
-            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
-            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+            _d = _mm_subs_epi8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epi8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epi8(_mm_abs_epi8(_d), _d), 1));
         }
+
+        Ip = (uchar *)_Ip; In = (uchar *)_In; G1 = (uchar *)_G1; G2 = (uchar *)_G2;
+
         for (; x < w - 1; x++) {
             d = *In++ - *Ip++;
             *G1++ = (abs(d) - d) / 2;
@@ -250,18 +250,18 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         if (y == 0) Ip += w;
         else if (y == h - 1) In -= w;
 
-        _Ip = (__m128i *)Ip;
-        _In = (__m128i *)In;
-        _G1 = (__m128i *)G1;
-        _G2 = (__m128i *)G2;
+        _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
         w_sse = (w >> 4) << 4;
-        for (x = 0; x < w_sse; x += 16, In += 16, Ip += 16)
+        for (x = 0; x < w_sse; x += 16)
         {
-            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
-            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
-            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+            _d = _mm_subs_epi8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epi8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epi8(_mm_abs_epi8(_d), _d), 1));
         }
+
+        Ip = (uchar *)_Ip; In = (uchar *)_In; G1 = (uchar *)_G1; G2 = (uchar *)_G2;
+
         for (; x < w; x++)
         {
             d = *In++ - *Ip++;
@@ -282,18 +282,18 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         *G1++ = (abs(d) - d) / 2;
         *G2++ = (abs(d) + d) / 2;
 
-        _Ip = (__m128i *)Ip;
-        _In = (__m128i *)In;
-        _G1 = (__m128i *)G1;
-        _G2 = (__m128i *)G2;
+        _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
         w_sse = ((w - 1) >> 4) << 4;
-        for (x = 1; x < w_sse; x += 16, In += 16, Ip += 16)
+        for (x = 1; x < w_sse; x += 16)
         {
-            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
-            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
-            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+            _d = _mm_subs_epi8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epi8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epi8(_mm_abs_epi8(_d), _d), 1));
         }
+
+        Ip = (uchar *)_Ip; In = (uchar *)_In; G1 = (uchar *)_G1; G2 = (uchar *)_G2;
+
         for (; x < w - 1; x++) {
             d = *In++ - *Ip++;
             *G1++ = (abs(d) - d) / 2;
@@ -316,18 +316,18 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
         *G1++ = (abs(d) - d) / 2;
         *G2++ = (abs(d) + d) / 2;
 
-        _Ip = (__m128i *)Ip;
-        _In = (__m128i *)In;
-        _G1 = (__m128i *)G1;
-        _G2 = (__m128i *)G2;
+        _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
         w_sse = ((w - 1) >> 4) << 4;
-        for (x = 1; x < w_sse; x += 16, In += 16, Ip += 16)
+        for (x = 1; x < w_sse; x += 16)
         {
-            _d = _mm_subs_epu8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
-            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epu8(_mm_abs_epi8(_d), _d), 1));
-            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epu8(_mm_abs_epi8(_d), _d), 1));
+            _d = _mm_subs_epi8(_mm_loadu_si128(_In++), _mm_loadu_si128(_Ip++));
+            _mm_storeu_si128(_G1++, _mm_srli_epi8(_mm_subs_epi8(_mm_abs_epi8(_d), _d), 1));
+            _mm_storeu_si128(_G2++, _mm_srli_epi8(_mm_adds_epi8(_mm_abs_epi8(_d), _d), 1));
         }
+
+        Ip = (uchar *)_Ip; In = (uchar *)_In; G1 = (uchar *)_G1; G2 = (uchar *)_G2;
+
         for (; x < w - 1; x++) {
             d = *In++ - *Ip++;
             *G1++ = (abs(d) - d) / 2;
