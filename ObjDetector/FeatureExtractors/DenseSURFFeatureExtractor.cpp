@@ -324,7 +324,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
     }
 }
 
-void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& feature)
+void GetRectsFromPatch(const Rect& patch, Rect rects[])
 {
     /* get separated blocks from patch */
     int cell_edge;
@@ -333,7 +333,6 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     else
         cell_edge = patch.width < patch.height ? patch.width : patch.height;
 
-    Rect rects[n_cells];
     Size shape;
     shape.width = patch.width / cell_edge;
     shape.height = patch.height / cell_edge;
@@ -342,6 +341,12 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     for (int w = 0; w < shape.width; w++) {
         rects[h * shape.width + w] = Rect(patch.x + w * cell_edge, patch.y + h * cell_edge, cell_edge, cell_edge);
     }
+}
+
+void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& feature)
+{
+    Rect rects[n_cells];
+    GetRectsFromPatch(patch, rects);
 
     /* calculate feature value using integral image*/
     for (int i = 0; i < n_cells; i++) {
