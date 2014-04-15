@@ -18,12 +18,6 @@ using std::ifstream;
 
 class CascadeClassifier;
 
-struct F256Dat
-{
-    __m128 xmm_f1;
-    __m128 xmm_f2;
-};
-
 typedef cv::Vec<float, 8> Vec8f;
 
 class DenseSURFFeatureExtractor : public FeatureExtractor
@@ -35,7 +29,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const int min_cell_edge = 6;
     float theta = 2 / sqrt(float(dim));
 
-    F256Dat** sumtab;
+    uint *sum;
 
     void T2bFilter(const Mat& img, uchar *grad);
     void CalcFeature(const Rect& patch, vector<float>& feature);
@@ -49,6 +43,7 @@ public:
     ~DenseSURFFeatureExtractor();
     void LoadFileList(string filename, string prefix_path, bool set_size);
     void IntegralImage(Mat img);
+    void integral2(int h, int w, uchar *grad, uint *sum);
     void ExtractPatches(vector<Rect>& patches);
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win);
     void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<float>>>& features_win);

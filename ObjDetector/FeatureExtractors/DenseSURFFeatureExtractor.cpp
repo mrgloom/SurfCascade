@@ -64,36 +64,37 @@ void DenseSURFFeatureExtractor::ExtractPatches(vector<Rect>& patches)
 
 void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 {
-    uchar *grad = new uchar[img.rows * img.cols * n_bins];
-    vector<Mat> sumvec(n_bins);
-
-    /* calculate integral image */
-    T2bFilter(img, grad);
-
-    for (int bin = 0; bin < n_bins; bin++) {
-        Mat grad1(img.rows, img.cols, CV_8UC1, grad + bin * img.rows * img.cols);
-        integral(grad1, sumvec[bin], CV_32FC1);
-    }
-
     //__declspec(align(16))
+    uchar *grad = new uchar[img.rows * img.cols * n_bins];
+    uint *sum = new uint[(img.rows + 1) * (img.cols + 1) * n_bins]();
 
-    Mat sum;
-    merge(sumvec, sum);
-
-    sumtab = new F256Dat*[img.rows + 1];
-    for (int i = 0; i < img.rows + 1; i++)
-        sumtab[i] = new F256Dat[img.cols + 1];
-
-    for (int i = 0; i < img.rows + 1; i++)
-    {
-        for (int j = 0; j < img.cols + 1; j++)
-        {
-            sumtab[i][j].xmm_f1 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8);
-            sumtab[i][j].xmm_f2 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8 + 4);
-        }
-    }
+    T2bFilter(img, grad);
+    integral2(img.rows, img.cols, grad, sum);
 
     delete grad;
+}
+
+void DenseSURFFeatureExtractor::integral2(int h, int w, uchar *src, uint *sum)
+{
+    uchar *pg;
+    uint *ps;
+    uint *psu;
+    uint s; // line sum
+
+    for (int c = 0; c < n_bins; c++) {
+        pg = src + c * w * h;
+        ps = sum + n_bins * (w + 2) + c;
+        psu = sum + n_bins + c;
+
+        for (int y = 1; y < h + 1; y++, ps += n_bins, psu += n_bins) {
+            s = 0;
+
+            for (int x = 1; x < w + 1; x++, pg++, ps += n_bins, psu += n_bins) {
+                s += *pg;
+                *ps = *psu + s;
+            }
+        }
+    }
 }
 
 void DenseSURFFeatureExtractor::ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win)
@@ -173,9 +174,7 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
                 }
             }
 
-            for (int j = 0; j < img.rows + 1; j++)
-                delete[] sumtab[j];
-            delete[] sumtab;
+            delete sum;
         }
     }
 
@@ -355,12 +354,12 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
 
     /* calculate feature value using integral image*/
     for (int i = 0; i < n_cells; i++) {
-        _mm_storeu_ps(feature.data() + i * 8, _mm_sub_ps(
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f1),
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f1)));
-        _mm_storeu_ps(feature.data() + i * 8 + 4, _mm_sub_ps(
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f2),
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f2)));
+        //_mm_storeu_ps(feature.data() + i * 8, _mm_sub_ps(
+        //    _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f1),
+        //    _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f1)));
+        //_mm_storeu_ps(feature.data() + i * 8 + 4, _mm_sub_ps(
+        //    _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f2),
+        //    _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f2)));
     }
 
     /* normalization */
