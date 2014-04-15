@@ -353,6 +353,11 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
             _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f2)));
     }
 
+    Normalize(feature);
+}
+
+void DenseSURFFeatureExtractor::Normalize(vector<float>& feature)
+{
     /* normalization */
     float norm;
     float norm_theta;

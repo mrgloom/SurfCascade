@@ -40,6 +40,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
 
     void T2bFilter(const Mat& img, uchar *grad);
     void CalcFeature(const Rect& patch, vector<float>& feature);
+    void Normalize(vector<float>& feature);
 
 public:
     vector<string> imgnames;
