@@ -349,14 +349,33 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
     GetRectsFromPatch(patch, rects);
 
     /* calculate feature value using integral image*/
-    for (int i = 0; i < n_cells; i++) {
-        _mm_storeu_ps(feature.data() + i * 8, _mm_sub_ps(
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f1),
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f1, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f1)));
-        _mm_storeu_ps(feature.data() + i * 8 + 4, _mm_sub_ps(
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x + rects[i].width].xmm_f2),
-            _mm_add_ps(sumtab[rects[i].y][rects[i].x + rects[i].width].xmm_f2, sumtab[rects[i].y + rects[i].height][rects[i].x].xmm_f2)));
-    }
+    _mm_storeu_ps(feature.data() + 0 * 8, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[0].y][rects[0].x].xmm_f1, sumtab[rects[0].y + rects[0].height][rects[0].x + rects[0].width].xmm_f1),
+        _mm_add_ps(sumtab[rects[0].y][rects[0].x + rects[0].width].xmm_f1, sumtab[rects[0].y + rects[0].height][rects[0].x].xmm_f1)));
+    _mm_storeu_ps(feature.data() + 0 * 8 + 4, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[0].y][rects[0].x].xmm_f2, sumtab[rects[0].y + rects[0].height][rects[0].x + rects[0].width].xmm_f2),
+        _mm_add_ps(sumtab[rects[0].y][rects[0].x + rects[0].width].xmm_f2, sumtab[rects[0].y + rects[0].height][rects[0].x].xmm_f2)));
+
+    _mm_storeu_ps(feature.data() + 1 * 8, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[1].y][rects[1].x].xmm_f1, sumtab[rects[1].y + rects[1].height][rects[1].x + rects[1].width].xmm_f1),
+        _mm_add_ps(sumtab[rects[1].y][rects[1].x + rects[1].width].xmm_f1, sumtab[rects[1].y + rects[1].height][rects[1].x].xmm_f1)));
+    _mm_storeu_ps(feature.data() + 1 * 8 + 4, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[1].y][rects[1].x].xmm_f2, sumtab[rects[1].y + rects[1].height][rects[1].x + rects[1].width].xmm_f2),
+        _mm_add_ps(sumtab[rects[1].y][rects[1].x + rects[1].width].xmm_f2, sumtab[rects[1].y + rects[1].height][rects[1].x].xmm_f2)));
+
+    _mm_storeu_ps(feature.data() + 2 * 8, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[2].y][rects[2].x].xmm_f1, sumtab[rects[2].y + rects[2].height][rects[2].x + rects[2].width].xmm_f1),
+        _mm_add_ps(sumtab[rects[2].y][rects[2].x + rects[2].width].xmm_f1, sumtab[rects[2].y + rects[2].height][rects[2].x].xmm_f1)));
+    _mm_storeu_ps(feature.data() + 2 * 8 + 4, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[2].y][rects[2].x].xmm_f2, sumtab[rects[2].y + rects[2].height][rects[2].x + rects[2].width].xmm_f2),
+        _mm_add_ps(sumtab[rects[2].y][rects[2].x + rects[2].width].xmm_f2, sumtab[rects[2].y + rects[2].height][rects[2].x].xmm_f2)));
+
+    _mm_storeu_ps(feature.data() + 3 * 8, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[3].y][rects[3].x].xmm_f1, sumtab[rects[3].y + rects[3].height][rects[3].x + rects[3].width].xmm_f1),
+        _mm_add_ps(sumtab[rects[3].y][rects[3].x + rects[3].width].xmm_f1, sumtab[rects[3].y + rects[3].height][rects[3].x].xmm_f1)));
+    _mm_storeu_ps(feature.data() + 3 * 8 + 4, _mm_sub_ps(
+        _mm_add_ps(sumtab[rects[3].y][rects[3].x].xmm_f2, sumtab[rects[3].y + rects[3].height][rects[3].x + rects[3].width].xmm_f2),
+        _mm_add_ps(sumtab[rects[3].y][rects[3].x + rects[3].width].xmm_f2, sumtab[rects[3].y + rects[3].height][rects[3].x].xmm_f2)));
 
     Normalize(feature);
 }
