@@ -77,21 +77,11 @@ void DenseSURFFeatureExtractor::IntegralImage(Mat img)
 
     //__declspec(align(16))
 
-    Mat sum;
-    merge(sumvec, sum);
+    merge(sumvec, summat);
 
     sumtab = new F256Dat*[img.rows + 1];
     for (int i = 0; i < img.rows + 1; i++)
-        sumtab[i] = new F256Dat[img.cols + 1];
-
-    for (int i = 0; i < img.rows + 1; i++)
-    {
-        for (int j = 0; j < img.cols + 1; j++)
-        {
-            sumtab[i][j].xmm_f1 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8);
-            sumtab[i][j].xmm_f2 = _mm_loadu_ps((float*)sum.ptr<float>(i) + j * 8 + 4);
-        }
-    }
+        sumtab[i] = (F256Dat *)summat.data + i * (img.cols + 1);
 
     delete grad;
 }

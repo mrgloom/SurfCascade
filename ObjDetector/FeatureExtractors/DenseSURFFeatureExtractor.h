@@ -35,6 +35,7 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     static const int min_cell_edge = 6;
     float theta = 2 / sqrt(float(dim));
 
+    Mat summat;
     F256Dat** sumtab;
 
     void T2bFilter(const Mat& img, uchar *grad);
