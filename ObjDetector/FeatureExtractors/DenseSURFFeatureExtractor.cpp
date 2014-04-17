@@ -387,35 +387,16 @@ void DenseSURFFeatureExtractor::Normalize(vector<float>& feature)
     float* p1 = feature.data() + dim;
     float* p = p0;
 
-    /**********************************************************************/
-    //float t, s;
-
     __m128 _s, _t, _t2;
-    /**********************************************************************/
-    //s = FLT_EPSILON;
-    //for (p = p0; p != p1; p++)
-    //    s += *p * *p;
 
     _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
     for (p = p0; p != p1; p+=4)
         _s = _mm_hadd_ps(_s, _mm_mul_ps(_mm_loadu_ps(p), _mm_loadu_ps(p)));
     _s = _mm_hadd_ps(_s, _s);
     _s = _mm_hadd_ps(_s, _s);
-    /**********************************************************************/
-    //t = sqrt(s) * theta;
 
     _t = _mm_mul_ps(_mm_sqrt_ps(_s), _mm_set_ps1(theta));
     _t2 = _mm_xor_ps(_t, _mm_set1_ps(-0.f));
-    /**********************************************************************/
-    //s = FLT_EPSILON;
-    //for (p = p0; p != p1; p++) {
-    //    if (*p > t)
-    //        *p = t;
-    //    else if (*p < -t)
-    //        *p = -t;
-
-    //    s += *p * *p;
-    //}
 
     _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
     for (p = p0; p != p1; p+=4) {
@@ -426,10 +407,6 @@ void DenseSURFFeatureExtractor::Normalize(vector<float>& feature)
     }
     _s = _mm_hadd_ps(_s, _s);
     _s = _mm_hadd_ps(_s, _s);
-    /**********************************************************************/
-    //t = 1 / sqrt(s);
-    //for (p = p0; p != p1; p++)
-    //    *p *= t;
 
     _t = _mm_div_ps(_mm_set_ps1(1), _mm_sqrt_ps(_s));
     for (p = p0; p != p1; p += 4)
