@@ -383,34 +383,57 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
 void DenseSURFFeatureExtractor::Normalize(vector<float>& feature)
 {
     /* normalization */
-    float norm;
-    float norm_theta;
-    float divisor;
-    float sum = FLT_EPSILON;
     float* p0 = feature.data();
     float* p1 = feature.data() + dim;
     float* p = p0;
 
-    for (p = p0; p != p1; p++) {
-        sum += *p * *p;
+    /**********************************************************************/
+    //float t, s;
+
+    __m128 _s, _t, _t2;
+    /**********************************************************************/
+    //s = FLT_EPSILON;
+    //for (p = p0; p != p1; p++)
+    //    s += *p * *p;
+
+    _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
+    for (p = p0; p != p1; p+=4)
+        _s = _mm_hadd_ps(_s, _mm_mul_ps(_mm_loadu_ps(p), _mm_loadu_ps(p)));
+    _s = _mm_hadd_ps(_s, _s);
+    _s = _mm_hadd_ps(_s, _s);
+    /**********************************************************************/
+    //t = sqrt(s) * theta;
+
+    _t = _mm_mul_ps(_mm_sqrt_ps(_s), _mm_set_ps1(theta));
+    _t2 = _mm_xor_ps(_t, _mm_set1_ps(-0.f));
+    /**********************************************************************/
+    //s = FLT_EPSILON;
+    //for (p = p0; p != p1; p++) {
+    //    if (*p > t)
+    //        *p = t;
+    //    else if (*p < -t)
+    //        *p = -t;
+
+    //    s += *p * *p;
+    //}
+
+    _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
+    for (p = p0; p != p1; p+=4) {
+        _mm_storeu_ps(p, _mm_min_ps(_mm_loadu_ps(p), _t));
+        _mm_storeu_ps(p, _mm_max_ps(_mm_loadu_ps(p), _t2));
+
+        _s = _mm_hadd_ps(_s, _mm_mul_ps(_mm_loadu_ps(p), _mm_loadu_ps(p)));
     }
-    norm = sqrt(sum);
-    norm_theta = norm * theta;
+    _s = _mm_hadd_ps(_s, _s);
+    _s = _mm_hadd_ps(_s, _s);
+    /**********************************************************************/
+    //t = 1 / sqrt(s);
+    //for (p = p0; p != p1; p++)
+    //    *p *= t;
 
-    sum = FLT_EPSILON;
-    for (p = p0; p != p1; p++) {
-        if (*p > norm_theta)
-            *p = norm_theta;
-        else if (*p < -norm_theta)
-            *p = -norm_theta;
-
-        sum += *p * *p;
-    }
-    norm = sqrt(sum);
-
-    divisor = 1 / norm;
-    for (p = p0; p != p1; p++)
-        *p *= divisor;
+    _t = _mm_div_ps(_mm_set_ps1(1), _mm_sqrt_ps(_s));
+    for (p = p0; p != p1; p += 4)
+        _mm_storeu_ps(p, _mm_mul_ps(_mm_loadu_ps(p), _t));
 }
 
 void DenseSURFFeatureExtractor::ProjectPatches(const Rect win2, const vector<vector<Rect>>& patches1, vector<vector<Rect>>& patches2)
