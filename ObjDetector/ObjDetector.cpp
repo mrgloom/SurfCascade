@@ -118,10 +118,14 @@ int main(int argc, char *argv[])
             features_win[i].resize(patches[i].size(), vector<float>(dense_surf_feature_extractor.dim));
         }
 
+        int win_size_num = (int)min(log(img.size().width / (float)70) / log(1.1), log(img.size().height / (float)70) / log(1.1));
+
         cout << "Scanning with varying windows..." << endl;
-        //for (Rect win(0, 0, 70, 70); win.width <= img.size().width && win.height <= img.size().height; win.width = int(win.width * 1.1), win.height = int(win.height * 1.1))
+        #pragma omp parallel for firstprivate(patches, features_win)
+        for (int i = 0; i <= win_size_num; i++)
         {
-            #pragma omp parallel for firstprivate(win, patches, features_win)
+            int l = (int)(70 * pow(1.1, i));
+            Rect win(0, 0, l, l);
             for (int y = 0; y <= img.size().height - win.height; y += step)
             {
                 win.y = y;
