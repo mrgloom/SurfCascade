@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     {
         string prefix_path = "D:/FaceData/Custom/";
         string pos_file("facepos.list");
-        string neg_file("neg.list");
+        string neg_file("faceneg.list");
 
         /* extract patches */
         DenseSURFFeatureExtractor dense_surf_feature_extractor;
