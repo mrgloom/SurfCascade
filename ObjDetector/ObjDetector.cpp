@@ -13,6 +13,7 @@ using std::string;
 using std::array;
 
 int get_filepaths(string folder, string wildcard, vector<string>& filepaths);
+void fast_nms(vector<Rect>& rects, vector<double>& scores, double overlap_th);
 
 int main(int argc, char *argv[])
 {
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
-        string filepath = "D:/FaceData/Custom/Detect/8.jpg";
+        string filepath = "D:/FaceData/Custom/Detect/9.jpg";
         int length = 70;
         Rect win(0, 0, length, length);
 
@@ -110,6 +111,7 @@ int main(int argc, char *argv[])
 
         /* scan with varying windows */
         vector<Rect> wins;
+        vector<double> scores;
         vector<vector<vector<float>>> features_win(patches.size());
         int step = win.width > 20 ? win.width / 20 : 1;
 
@@ -141,6 +143,7 @@ int main(int argc, char *argv[])
                         #pragma omp critical
                         {
                             wins.push_back(win);
+                            scores.push_back(score);
                             rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                         }
                     }
@@ -151,6 +154,7 @@ int main(int argc, char *argv[])
         }
         cout << "Over." << endl;
 
+        //fast_nms(wins, scores, 0.7);
         groupRectangles(wins, 2, 0.2);
         for (int i = 0; i < wins.size(); i++)
             rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
@@ -178,4 +182,111 @@ int get_filepaths(string folder, string wildcard, vector<string>& filepaths)
     FindClose(hFind);
 
     return i;
+}
+
+static void
+sort_idx(const vector<double>& scores, int* idxes) {
+    /* sort indexes descending by scores */
+    int i, j;
+    for (i = 0; i < scores.size(); ++i) {
+        for (j = i + 1; j < scores.size(); ++j) {
+            int ti = idxes[i], tj = idxes[j];
+            if (scores[tj] < scores[ti]) {
+                idxes[i] = tj;
+                idxes[j] = ti;
+            }
+        }
+    }
+}
+
+static int
+sort_stable(int *arr, int n) {
+    /* stable move all -1 to the end */
+    int i = 0, j = 0;
+
+    while (i < n) {
+        if (arr[i] == -1) {
+            if (j < i + 1)
+                j = i + 1;
+            while (j < n) {
+                if (arr[j] == -1) ++j;
+                else {
+                    arr[i] = arr[j];
+                    arr[j] = -1;
+                    j++;
+                    break;
+                }
+            }
+            if (j == n) return i;
+        }
+        ++i;
+    }
+    return i;
+}
+
+#define fast_max(x,y) (x - ((x - y) & ((x - y) >> (sizeof(int) * CHAR_BIT - 1))))
+#define fast_min(x,y) (y + ((x - y) & ((x - y) >> (sizeof(int) * CHAR_BIT - 1))))
+
+void
+fast_nms(vector<Rect>& rects, vector<double>& scores, double overlap_th) {
+    size_t num = rects.size();
+
+    void *pmem = malloc(sizeof(int)* (num + num) + sizeof(float)* num);
+    int *idxes = (int *)pmem;
+    int *pick = idxes + num;
+    float *invareas = (float *)(pick + num);
+    int idx_count = (int)num;
+    int counter = 0, last_idx;
+    int x0, y0, x1, y1;
+    int tx0, ty0, tx1, ty1;
+
+    for (int i = 0; i < num; ++i) idxes[i] = i;
+    sort_idx(scores, idxes);
+
+    for (int i = 0; i < num; ++i) {
+        int ti = idxes[i];
+        Rect r = rects[idxes[i]];
+        invareas[ti] = 1.0f / ((r.width + 1) * (r.height + 1));
+    }
+
+    while (idx_count > 0) {
+        int tmp_idx = idx_count - 1;
+        last_idx = idxes[tmp_idx];
+        pick[counter++] = last_idx;
+
+        x0 = rects[last_idx].x;
+        y0 = rects[last_idx].y;
+        x1 = rects[last_idx].x + rects[last_idx].width;
+        y1 = rects[last_idx].y + rects[last_idx].height;
+
+        idxes[tmp_idx] = -1;
+
+        for (int i = tmp_idx - 1; i != -1; i--) {
+
+            Rect r = rects[idxes[i]];
+            tx0 = fast_max(x0, r.x);
+            ty0 = fast_max(y0, r.y);
+            tx1 = fast_min(x1, r.x + r.width);
+            ty1 = fast_min(y1, r.y + r.height);
+
+            tx0 = tx1 - tx0 + 1;
+            ty0 = ty1 - ty0 + 1;
+            if (tx0 > 0 && ty0 > 0) {
+                if (tx0 * ty0 * invareas[idxes[i]] > overlap_th) {
+                    idxes[i] = -1;
+                }
+            }
+        }
+        idx_count = sort_stable(idxes, idx_count);
+    }
+
+    /* just give the selected rects' indexes, modification needed for real use */
+    vector<Rect> picked;
+    for (int i = 0; i < counter; ++i) {
+        picked.push_back(rects[pick[i]]);
+    }
+
+    rects = picked;
+
+    free(pmem);
 }
