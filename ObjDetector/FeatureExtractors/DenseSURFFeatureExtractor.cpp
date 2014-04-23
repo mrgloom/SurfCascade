@@ -134,6 +134,9 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
             Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
             LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
 
+            if (!img.data || img.cols < size.width || img.rows < size.height)
+                continue;
+
             IntegralImage(img);
 
             Rect win(0, 0, size.width, size.height);
