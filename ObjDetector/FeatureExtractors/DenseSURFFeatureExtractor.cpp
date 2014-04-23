@@ -163,8 +163,6 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
                 }
             }
 
-            for (int j = 0; j < img.rows + 1; j++)
-                delete[] sumtab[j];
             delete[] sumtab;
         }
     }
