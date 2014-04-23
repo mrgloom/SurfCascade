@@ -127,7 +127,6 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
 
     bool done = false;
 
-#pragma omp for schedule(dynamic)
     for (int i = idx; i < imgnames.size(); i++)
     {
         if (!done)
@@ -138,8 +137,10 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
             IntegralImage(img);
 
             Rect win(0, 0, size.width, size.height);
-            for (win.y = 0; win.y + win.height <= img.size().height; win.y += win.height)
+            #pragma omp parallel for firstprivate(new_patches, features_img)
+            for (int j = 0; j < (img.size().height - win.height) / win.height; j++)
             {
+                win.y = j * win.height;
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
                 {
                     ProjectPatches(win, patches, new_patches);
@@ -147,7 +148,7 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
 
                     if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
                     {
-#pragma omp critical
+                        #pragma omp critical
                         if (features_all.size() < n_total)
                         {
                             features_all.push_back(features_img);
