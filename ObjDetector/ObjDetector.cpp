@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
 
         cout << "Extracting features in positive samples..." << endl;
         int i = 0;
-        while (dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_all[i++]))
-            ;
+        while (i < dense_surf_feature_extractor.imgnames.size())
+            dense_surf_feature_extractor.ExtractNextImageFeatures(patches, features_all[i++]);
 
         vector<bool> labels(features_all.size(), true);
 
