@@ -119,6 +119,8 @@ bool DenseSURFFeatureExtractor::ExtractNextImageFeatures(const vector<Rect>& pat
         return false;
 }
 
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+
 bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vector<vector<vector<float>>>& features_all, int n_total, CascadeClassifier& cascade_classifier, bool first)
 {
     static int idx = 0;
@@ -137,30 +139,42 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
 
         IntegralImage(img);
 
-        Rect win(0, 0, size.width, size.height);
+        int win_size_num = (int)min(log(img.size().width / (float)size.width) / log(1.1), log(img.size().height / (float)size.width) / log(1.1));
+
         #pragma omp parallel for firstprivate(new_patches, features_img)
-        for (int j = 0; j < (img.size().height - win.height) / win.height; j++)
+        for (int k = 0; k <= win_size_num; k++)
         {
+            #pragma omp flush(done)
             if (!done)
             {
-                win.y = j * win.height;
-                for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
+                int l = (int)(size.width * pow(1.1, k));
+                Rect win(0, 0, l, l);
+                for (win.y = 0; win.y <= img.size().height - win.height; win.y += 10)
                 {
+                    #pragma omp flush(done)
                     if (!done)
                     {
-                        ProjectPatches(win, patches, new_patches);
-                        ExtractFeatures(new_patches, features_img);
-
-                        if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                        for (win.x = 0; win.x + win.width <= img.size().width; win.x += 10)
                         {
-                            #pragma omp critical
-                            if (features_all.size() < n_total)
+                            #pragma omp flush(done)
+                            if (!done)
                             {
-                                features_all.push_back(features_img);
-                                LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
-                                if (features_all.size() == n_total) {
-                                    done = true;
-                                    idx = i + 1;
+                                ProjectPatches(win, patches, new_patches);
+                                ExtractFeatures(new_patches, features_img);
+
+                                if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                                {
+                                    #pragma omp critical
+                                    if (features_all.size() < n_total)
+                                    {
+                                        features_all.push_back(features_img);
+                                        LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                                        if (features_all.size() == n_total) {
+                                            done = true;
+                                            #pragma omp flush(done)
+                                            idx = i + 1;
+                                        }
+                                    }
                                 }
                             }
                         }
