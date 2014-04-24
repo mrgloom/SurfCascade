@@ -213,7 +213,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
 
         _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
-        w_sse = ((w - 1) >> 4) << 4;
+        w_sse = (((w - 2) >> 4) << 4) + 1;
         for (x = 1; x < w_sse; x += 16, _Ip++, _In++)
         {
             _mm_storeu_si128(_G1++, _mm_subs_epu8(_mm_loadu_si128(_Ip), _mm_loadu_si128(_In)));
@@ -273,7 +273,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
 
         _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
-        w_sse = ((w - 1) >> 4) << 4;
+        w_sse = (((w - 2) >> 4) << 4) + 1;
         for (x = 1; x < w_sse; x += 16, _Ip++, _In++)
         {
             _mm_storeu_si128(_G1++, _mm_subs_epu8(_mm_loadu_si128(_Ip), _mm_loadu_si128(_In)));
@@ -306,7 +306,7 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
 
         _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
-        w_sse = ((w - 1) >> 4) << 4;
+        w_sse = (((w - 2) >> 4) << 4) + 1;
         for (x = 1; x < w_sse; x += 16, _Ip++, _In++)
         {
             _mm_storeu_si128(_G1++, _mm_subs_epu8(_mm_loadu_si128(_Ip), _mm_loadu_si128(_In)));
