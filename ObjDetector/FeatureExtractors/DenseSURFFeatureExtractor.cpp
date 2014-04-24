@@ -129,46 +129,50 @@ bool DenseSURFFeatureExtractor::FillNegSamples(const vector<Rect>& patches, vect
 
     for (int i = idx; i < imgnames.size(); i++)
     {
-        if (!done)
+        Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
+        LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
+
+        if (!img.data || img.cols < size.width || img.rows < size.height)
+            continue;
+
+        IntegralImage(img);
+
+        Rect win(0, 0, size.width, size.height);
+        #pragma omp parallel for firstprivate(new_patches, features_img)
+        for (int j = 0; j < (img.size().height - win.height) / win.height; j++)
         {
-            Mat img = imread(prefix_path + imgnames[i], cv::IMREAD_GRAYSCALE);
-            LOG_DEBUG("\tReading image: " << imgnames[i] << ", features_all.size() = " << features_all.size());
-
-            if (!img.data || img.cols < size.width || img.rows < size.height)
-                continue;
-
-            IntegralImage(img);
-
-            Rect win(0, 0, size.width, size.height);
-            #pragma omp parallel for firstprivate(new_patches, features_img)
-            for (int j = 0; j < (img.size().height - win.height) / win.height; j++)
+            if (!done)
             {
                 win.y = j * win.height;
                 for (win.x = 0; win.x + win.width <= img.size().width; win.x += win.width)
                 {
-                    ProjectPatches(win, patches, new_patches);
-                    ExtractFeatures(new_patches, features_img);
-
-                    if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
+                    if (!done)
                     {
-                        #pragma omp critical
-                        if (features_all.size() < n_total)
+                        ProjectPatches(win, patches, new_patches);
+                        ExtractFeatures(new_patches, features_img);
+
+                        if (first == true || cascade_classifier.Predict(features_img) == true) // if false positive
                         {
-                            features_all.push_back(features_img);
-                            LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                            #pragma omp critical
+                            if (features_all.size() < n_total)
+                            {
+                                features_all.push_back(features_img);
+                                LOG_INFO_NN("\r\tFilled: " << features_all.size() - n_total / 2 << '/' << n_total / 2 << flush);
+                                if (features_all.size() == n_total) {
+                                    done = true;
+                                    idx = i + 1;
+                                }
+                            }
                         }
-                    }
-
-                    if (features_all.size() == n_total)
-                    {
-                        done = true;
-                        idx = i;
                     }
                 }
             }
-
-            delete[] sumtab;
         }
+
+        delete[] sumtab;
+
+        if (done)
+            break;
     }
 
     if (!done)
