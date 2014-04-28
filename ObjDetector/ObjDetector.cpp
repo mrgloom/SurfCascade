@@ -9,6 +9,7 @@
 #include <fstream>
 
 using std::ifstream;
+using std::ofstream;
 using std::string;
 using std::array;
 
@@ -101,14 +102,6 @@ int main(int argc, char *argv[])
         /* calculate integral image */
         vector<vector<Rect>> patches(fitted_patches);
 
-        cout << "Calculating integral image..." << endl;
-        Mat img = imread(filepath, cv::IMREAD_GRAYSCALE);
-        dense_surf_feature_extractor.IntegralImage(img);
-
-        /* prepare showing image */
-        Mat img_rgb(img.size(), CV_8UC3);
-        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
-
         /* scan with varying windows */
         vector<Rect> wins;
         vector<double> scores;
@@ -120,9 +113,31 @@ int main(int argc, char *argv[])
             features_win[i].resize(patches[i].size(), vector<float>(dense_surf_feature_extractor.dim));
         }
 
+        string prefix = "D:/FaceData/FDDB/";
+        string filelist = "evaluations.txt";
+        ifstream fs(prefix + filelist);
+        vector<string> filepaths;
+
+        while (getline(fs, filepath))
+            filepaths.push_back(filepath);
+        fs.close();
+
+        ofstream of("surf_det.txt");
+
+        for (int i = 0; i < filepaths.size(); i++)
+        {
+        cout << "Detecting image " << i + 1 << '/' << filepaths.size() << endl;
+        //cout << "Calculating integral image..." << endl;
+        Mat img = imread(prefix + filepaths[i] + ".jpg", cv::IMREAD_GRAYSCALE);
+        dense_surf_feature_extractor.IntegralImage(img);
+
+        /* prepare showing image */
+        Mat img_rgb(img.size(), CV_8UC3);
+        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+
         int win_size_num = (int)min(log(img.size().width / (float)70) / log(1.1), log(img.size().height / (float)70) / log(1.1));
 
-        cout << "Scanning with varying windows..." << endl;
+        //cout << "Scanning with varying windows..." << endl;
         #pragma omp parallel for firstprivate(patches, features_win)
         for (int i = 0; i <= win_size_num; i++)
         {
@@ -152,16 +167,28 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        cout << "Over." << endl;
+        //cout << "Over." << endl;
 
-        //fast_nms(wins, scores, 0.7);
-        groupRectangles(wins, 2, 0.2);
+        fast_nms(wins, scores, 0.7);
+        //groupRectangles(wins, 2, 0.2);
+
+        of << filepaths[i] << '\n';
+        of << wins.size() << '\n';
         for (int i = 0; i < wins.size(); i++)
-            rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
+            of << wins[i].x << ' ' << wins[i].y << ' ' << wins[i].width << ' ' << wins[i].height << ' ' << scores[i] << '\n';
 
-        cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
-        cv::imshow("Result", img_rgb);
-        cv::waitKey(0);
+        //for (int i = 0; i < wins.size(); i++)
+        //    rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
+
+        //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
+        //cv::imshow("Result", img_rgb);
+        //cv::waitKey(0);
+
+        wins.clear();
+        scores.clear();
+        }
+
+        of.close();
     }
 
     return 0;
@@ -282,11 +309,14 @@ fast_nms(vector<Rect>& rects, vector<double>& scores, double overlap_th) {
 
     /* just give the selected rects' indexes, modification needed for real use */
     vector<Rect> picked;
+    vector<double> picked_scores;
     for (int i = 0; i < counter; ++i) {
         picked.push_back(rects[pick[i]]);
+        picked_scores.push_back(scores[pick[i]]);
     }
 
     rects = picked;
+    scores = picked_scores;
 
     free(pmem);
 }
