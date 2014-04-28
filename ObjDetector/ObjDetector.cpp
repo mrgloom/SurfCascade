@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
                         }
                     }
 
-                    multi = (score < cascade_classifier.stage_classifiers.size() / 2) ? 2 : 1;
+                    multi = (score < 0.5) ? 2 : 1;
                 }
             }
         }

@@ -75,7 +75,7 @@ bool CascadeClassifier::Predict2(vector<vector<vector<float>>>& x, double& score
             break;
     }
 
-    score += i;
+    score = (score + i + 1) / stage_classifiers.size();
 
     return i == stage_classifiers.size();
 }
