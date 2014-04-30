@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
             filepaths.push_back(filepath);
         fs.close();
 
-        ofstream of("surf.txt", ios::binary);
+        ofstream of("C:/Users/Meng/Documents/MATLAB/surf.txt", ios::binary);
 
         for (int i = 0; i < filepaths.size(); i++)
         {
