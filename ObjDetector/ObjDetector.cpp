@@ -10,6 +10,7 @@
 
 using std::ifstream;
 using std::ofstream;
+using std::ios;
 using std::string;
 using std::array;
 
@@ -122,7 +123,7 @@ int main(int argc, char *argv[])
             filepaths.push_back(filepath);
         fs.close();
 
-        ofstream of("surf_det.txt");
+        ofstream of("surf.txt", ios::binary);
 
         for (int i = 0; i < filepaths.size(); i++)
         {
