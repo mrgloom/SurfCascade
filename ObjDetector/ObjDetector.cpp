@@ -170,7 +170,9 @@ int main(int argc, char *argv[])
         }
         //cout << "Over." << endl;
 
-        fast_nms(wins, scores, 0.7);
+        //fast_nms(wins, scores, 0.7);
+        vector<int> weights(wins.size(), 0);
+        groupRectangles(wins, weights, scores, 2, 0.2);
         //groupRectangles(wins, 2, 0.2);
 
         of << filepaths[i] << '\n';
