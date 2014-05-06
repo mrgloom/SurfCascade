@@ -39,7 +39,6 @@ class DenseSURFFeatureExtractor : public FeatureExtractor
     F256Dat** sumtab;
 
     void T2bFilter(const Mat& img, uchar *grad);
-    void CalcFeature(const Rect& patch, vector<float>& feature);
     void Normalize(vector<float>& feature);
 
 public:
@@ -52,6 +51,7 @@ public:
     void LoadFileList(string filename, string prefix_path, bool set_size);
     void IntegralImage(Mat img);
     void ExtractPatches(vector<Rect>& patches);
+    void CalcFeature(const Rect& patch, vector<float>& feature);
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win);
     void ExtractFeatures(const vector<vector<Rect>>& patches, vector<vector<vector<float>>>& features_win);
     bool ExtractNextImageFeatures(const vector<Rect>& patches, vector<vector<float>>& features_img);

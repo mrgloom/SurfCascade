@@ -151,10 +151,20 @@ int main(int argc, char *argv[])
                 for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
                 {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
-                    dense_surf_feature_extractor.ExtractFeatures(patches, features_win);
 
                     double score;
-                    if (cascade_classifier.Predict2(features_win, score))
+                    int p;
+                    for (p = 0; p < patches.size(); p++) {
+                        for (int q = 0; q < patches[p].size(); q++)
+                            dense_surf_feature_extractor.CalcFeature(patches[p][q], features_win[p][q]);
+
+                        if ((score = cascade_classifier.stage_classifiers[p]->Predict2(features_win[p])) < cascade_classifier.stage_classifiers[p]->theta)
+                            break;
+                    }
+
+                    score = (score + p + 1) / cascade_classifier.stage_classifiers.size();
+
+                    if (p == cascade_classifier.stage_classifiers.size())
                     {
                         #pragma omp critical
                         {
