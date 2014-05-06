@@ -125,11 +125,11 @@ int main(int argc, char *argv[])
 
         ofstream of("C:/Users/Meng/Documents/MATLAB/surf.txt", ios::binary);
 
-        for (int i = 0; i < filepaths.size(); i++)
+        for (int j = 0; j < filepaths.size(); j++)
         {
-        cout << "Detecting image " << i + 1 << '/' << filepaths.size() << endl;
+        cout << "Detecting image " << j + 1 << '/' << filepaths.size() << endl;
         //cout << "Calculating integral image..." << endl;
-        Mat img = imread(prefix + filepaths[i] + ".jpg", cv::IMREAD_GRAYSCALE);
+        Mat img = imread(prefix + filepaths[j] + ".jpg", cv::IMREAD_GRAYSCALE);
         dense_surf_feature_extractor.IntegralImage(img);
 
         /* prepare showing image */
@@ -175,13 +175,13 @@ int main(int argc, char *argv[])
         groupRectangles(wins, weights, scores, 2, 0.2);
         //groupRectangles(wins, 2, 0.2);
 
-        of << filepaths[i] << '\n';
+        of << filepaths[j] << '\n';
         of << wins.size() << '\n';
-        for (int i = 0; i < wins.size(); i++)
-            of << wins[i].x << ' ' << wins[i].y << ' ' << wins[i].width << ' ' << wins[i].height << ' ' << scores[i] << '\n';
+        for (int k = 0; k < wins.size(); k++)
+            of << wins[k].x << ' ' << wins[k].y << ' ' << wins[k].width << ' ' << wins[k].height << ' ' << scores[k] << '\n';
 
-        //for (int i = 0; i < wins.size(); i++)
-        //    rectangle(img_rgb, wins[i], cv::Scalar(0, 255, 0), 2);
+        //for (int k = 0; k < wins.size(); k++)
+        //    rectangle(img_rgb, wins[k], cv::Scalar(0, 255, 0), 2);
 
         //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
         //cv::imshow("Result", img_rgb);
