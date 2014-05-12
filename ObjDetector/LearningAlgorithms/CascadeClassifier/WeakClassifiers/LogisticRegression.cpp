@@ -35,27 +35,27 @@ void LogisticRegression::Train(problem* prob)
 
 float LogisticRegression::Predict(vector<float>& x)
 {
-    double prob_estimates[2];
+    double prob;
 
-    feature_node* fn = new feature_node[x.size() + 2];
+    int n = model_->nr_feature + 1;
+    float *w = new float[n];
+    for (int i = 0; i < n; i++)
+        w[i] = (float)model_->w[i];
 
-    int i;
-    for (i = 0; i < x.size(); i++)
-    {
-        fn[i].index = i + 1;
-        fn[i].value = x[i];
+    __m128 _s = _mm_set_ps1(0);
+
+    for (int i = 0; i < x.size(); i += 4) {
+        __m128 _t = _mm_mul_ps(_mm_loadu_ps(&w[i]), _mm_loadu_ps(&x.data()[i]));
+        _s = _mm_add_ps(_t, _s);
     }
-    if (model_->bias > 0)
-    {
-        fn[i].index = i + 1;
-        fn[i].value = model_->bias;
-        ++i;
-    }
-    fn[i].index = -1;
+    _s = _mm_hadd_ps(_s, _s);
+    _s = _mm_hadd_ps(_s, _s);
+    prob = _s.m128_f32[0];
 
-    predict_probability(model_, fn, prob_estimates);
+    prob += w[x.size()] * model_->bias;
+    prob = 1 / (1 + exp(-prob));
 
-    delete[] fn;
+    delete[] w;
 
-    return (float)prob_estimates[0];
+    return (float)prob;
 }
