@@ -23,12 +23,22 @@ LogisticRegression::LogisticRegression(int patch_index)
     param->nr_weight = 0;
 
     set_print_string_function(&print_null);
+
+    w = new float[32];
+}
+
+LogisticRegression::~LogisticRegression()
+{
+    delete[] w;
 }
 
 void LogisticRegression::Train(problem* prob)
 {
-    if (check_parameter(prob, param) == NULL)
+    if (check_parameter(prob, param) == NULL) {
         model_ = train(prob, param);
+        for (int i = 0; i < 32; i++)
+            w[i] = (float)model_->w[i];
+    }
     else
         LOG_ERROR("liblinear check_parameter() error.");
 }
@@ -36,11 +46,6 @@ void LogisticRegression::Train(problem* prob)
 float LogisticRegression::Predict(vector<float>& x)
 {
     double prob;
-
-    int n = model_->nr_feature + 1;
-    float *w = new float[n];
-    for (int i = 0; i < n; i++)
-        w[i] = (float)model_->w[i];
 
     __m128 _s = _mm_set_ps1(0);
 
@@ -54,8 +59,6 @@ float LogisticRegression::Predict(vector<float>& x)
 
     prob += w[x.size()] * model_->bias;
     prob = 1 / (1 + exp(-prob));
-
-    delete[] w;
 
     return (float)prob;
 }

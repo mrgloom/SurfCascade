@@ -170,9 +170,9 @@ int Model::Load(CascadeClassifier& cascade_classifier)
                 logistic_regression->model_->bias = weak_classifier_grp["bias"];
 
                 Setting& w_arr = weak_classifier_grp["w"];
-                logistic_regression->model_->w = new double[w_arr.getLength()];
+                logistic_regression->w = new float[w_arr.getLength()];
                 for (int k = 0; k < w_arr.getLength(); k++)
-                    logistic_regression->model_->w[k] = w_arr[k];
+                    logistic_regression->w[k] = w_arr[k];
 
                 Setting& label_arr = weak_classifier_grp["label"];
                 logistic_regression->model_->label = new int[2];
