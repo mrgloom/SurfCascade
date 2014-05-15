@@ -96,9 +96,9 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
             shared_ptr<LogisticRegression> weak_classifier(new LogisticRegression(k));
 
             if (SETLEVEL == DEBUG_LEVEL)
-                LOG_INFO("\t\tTraining logistic regression " << k << '/' << patches_num);
+                LOG_INFO("\t\tTraining logistic regression " << k + 1 << '/' << patches_num);
             else
-                LOG_INFO_NN("\r\t\tTraining logistic regression " << k << '/' << patches_num << flush);
+                LOG_INFO_NN("\r\t\tTraining logistic regression " << k + 1 << '/' << patches_num << flush);
 
             weak_classifier->Train(prob);
 

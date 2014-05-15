@@ -27,7 +27,7 @@ void CascadeClassifier::Train(vector<vector<vector<float>>>& X, vector<bool>& y,
     LOG_INFO("\tCascade stages begin");
     for (int i = 0; i < max_stages_num && FPR > FPR_target; i++)
     {
-        LOG_INFO("\tCascade stage " << i);
+        LOG_INFO("\tCascade stage " << i + 1);
 
         /* renew negative samples */
         LOG_INFO("\tRenew negative samples...");
