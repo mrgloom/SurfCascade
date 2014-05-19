@@ -62,7 +62,9 @@ float StageClassifier::Evaluate(vector<vector<vector<float>>>& X, vector<bool>& 
         FPRs.push_back(count_if(probs.begin() + n_pos, probs.end(), bind2nd(greater_equal<float>(), threshhold)) / (float)n_neg);
 
         if (FPRs.size() > 1)
-            area += TPRs.back() * (FPRs.back() - FPRs[FPRs.size() - 2]); // right Riemann sum
+            area += (TPRs.back() + TPRs[TPRs.size() - 2]) * (FPRs.back() - FPRs[FPRs.size() - 2]) / 2; // trapezoid
+            //area += TPRs[TPRs.size() - 2] * (FPRs.back() - FPRs[FPRs.size() - 2]); // left riemann sum
+            //area += TPRs.back() * (FPRs.back() - FPRs[FPRs.size() - 2]); // right Riemann sum
     }
 
     return area;
