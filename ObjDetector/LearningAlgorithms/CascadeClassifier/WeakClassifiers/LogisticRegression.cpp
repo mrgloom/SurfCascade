@@ -19,7 +19,7 @@ LogisticRegression::LogisticRegression(int patch_index)
     param = new parameter();
     param->solver_type = 0;
     param->eps = 0.01;
-    param->C = 1;
+    param->C = 0.1;
     param->nr_weight = 0;
 
     set_print_string_function(&print_null);
