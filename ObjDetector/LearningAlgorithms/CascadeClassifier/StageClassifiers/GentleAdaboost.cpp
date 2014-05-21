@@ -19,8 +19,8 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
     assert(n_pos == n_neg);
 
     /* normalize initial weights */
-    vector<float> weights(n_pos, 1.0f / n_pos);
-    vector<float> weights_neg(n_neg, 1.0f / n_neg);
+    vector<double> weights(n_pos, 1.0 / n_pos);
+    vector<double> weights_neg(n_neg, 1.0 / n_neg);
     weights.insert(weights.end(), weights_neg.begin(), weights_neg.end());
 
     /* boosting */
@@ -28,14 +28,6 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
     for (int t = 0; t < max_iters; t++)
     {
         LOG_INFO("\t\tBoosting round " << t);
-
-        /* sort sample by weights */
-        vector<int> index(weights.size());
-        for (int i = 0; i < index.size(); i++)
-            index[i] = i;
-
-        sort(index.begin(), index.begin() + n_pos, [&weights](int a, int b) {return weights[a] > weights[b]; });
-        sort(index.begin() + n_pos, index.end(), [&weights](int a, int b) {return weights[a] > weights[b]; });
         
         /* parallel for each patch, train a weak classifier */
         shared_ptr<LogisticRegression> best_weak_classifier;
@@ -58,8 +50,25 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
             assert(sample_num <= n_total);
             for (int i = 0; i < sample_num; i++)
             {
+                // roulette wheel algorithm
+                double r;
+                double s;
+                int n;
+
+                while (1) {
+                    r = (double)rand() / RAND_MAX;
+                    s = 0;
+                    for (n = 0; n < n_pos; n++) {
+                        s += weights[n];
+                        if (r <= s)
+                            break;
+                    }
+                    if (n != n_pos)
+                        break;
+                }
+
                 prob->x[i] = new feature_node[32 + 1 + (prob->bias != 0)];
-                feature = X[index[i]][k];
+                feature = X[n][k];
                 int j;
                 for (j = 0; j < 32; j++)
                 {
@@ -75,8 +84,21 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
                 prob->x[i][j].index = -1;
                 prob->y[i] = 1;
 
+                // roulette wheel algorithm
+                while (1) {
+                    r = (double)rand() / RAND_MAX;
+                    s = 0;
+                    for (n = n_pos; n < n_total; n++) {
+                        s += weights[n];
+                        if (r <= s)
+                            break;
+                    }
+                    if (n != n_total)
+                        break;
+                }
+
                 prob->x[i + sample_num] = new feature_node[32 + 1 + (prob->bias != 0)];
-                feature = X[index[i + n_pos]][k];
+                feature = X[n][k];
                 for (j = 0; j < 32; j++)
                 {
                     prob->x[i + sample_num][j].index = j + 1;
@@ -155,9 +177,9 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
             total_AUC_score = best_AUC_score;
 
         /* update samples weights */
-        vector<float> old_weights(weights);
-        float sum_weights_pos = 0;
-        float sum_weights_neg = 0;
+        vector<double> old_weights(weights);
+        double sum_weights_pos = 0;
+        double sum_weights_neg = 0;
 
         for (int i = 0; i < n_total; i++)
         {
