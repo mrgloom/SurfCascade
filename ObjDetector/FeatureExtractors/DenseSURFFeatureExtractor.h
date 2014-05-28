@@ -50,6 +50,7 @@ public:
     ~DenseSURFFeatureExtractor();
     void LoadFileList(string filename, string prefix_path, bool set_size);
     void IntegralImage(Mat img);
+    float sum(const Rect& win);
     void ExtractPatches(vector<Rect>& patches);
     void CalcFeature(const Rect& patch, vector<float>& feature);
     void ExtractFeatures(const vector<Rect>& patches, vector<vector<float>>& features_win);

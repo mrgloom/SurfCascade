@@ -344,6 +344,15 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
     }
 }
 
+float DenseSURFFeatureExtractor::sum(const Rect& win)
+{
+    float sums[4];
+    _mm_storeu_ps(sums, _mm_sub_ps(
+        _mm_add_ps(sumtab[win.y][win.x].xmm_f1, sumtab[win.y + win.height][win.x + win.width].xmm_f1),
+        _mm_add_ps(sumtab[win.y][win.x + win.width].xmm_f1, sumtab[win.y + win.height][win.x].xmm_f1)));
+    return (sums[0] + sums[1] + sums[2] + sums[3]) / 2;
+}
+
 void GetRectsFromPatch(const Rect& patch, Rect rects[])
 {
     /* get separated blocks from patch */

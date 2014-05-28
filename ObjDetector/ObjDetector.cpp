@@ -185,6 +185,7 @@ int main(int argc, char *argv[])
                 int multi = 1;
                 for (win.x = 0; win.x <= img.size().width - win.width; win.x += multi * step)
                 {
+                    if (dense_surf_feature_extractor.sum(win) > win.area() * 6) {
                     dense_surf_feature_extractor.ProjectPatches(win, fitted_patches, patches);
 
                     double score;
@@ -211,6 +212,9 @@ int main(int argc, char *argv[])
                     }
 
                     multi = (score < 0.5) ? 2 : 1;
+                    }
+                    else
+                        multi = 2;
                 }
             }
         }
