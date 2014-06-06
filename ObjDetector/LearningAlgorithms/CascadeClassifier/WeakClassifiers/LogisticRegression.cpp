@@ -24,7 +24,7 @@ LogisticRegression::LogisticRegression(int patch_index)
 
     set_print_string_function(&print_null);
 
-    w = new float[32];
+    w = new float[33];
 }
 
 LogisticRegression::~LogisticRegression()
@@ -36,7 +36,7 @@ void LogisticRegression::Train(problem* prob)
 {
     if (check_parameter(prob, param) == NULL) {
         model_ = train(prob, param);
-        for (int i = 0; i < 32; i++)
+        for (int i = 0; i < 33; i++)
             w[i] = (float)model_->w[i];
     }
     else
