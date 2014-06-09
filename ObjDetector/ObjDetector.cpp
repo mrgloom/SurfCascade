@@ -98,6 +98,8 @@ int main(int argc, char *argv[])
     /************************************************************************/
     else if (strcmp(argv[1], "--detect") == 0 || strcmp(argv[1], "-d") == 0)
     {
+        bool show = 0;
+
         string filepath = "D:/FaceData/Custom/Detect/9.jpg";
         int length = 70;
         Rect win(0, 0, length, length);
@@ -163,8 +165,11 @@ int main(int argc, char *argv[])
         dense_surf_feature_extractor.IntegralImage(img);
 
         /* prepare showing image */
-        Mat img_rgb(img.size(), CV_8UC3);
-        cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+        Mat img_rgb;
+        if (show) {
+            img_rgb.create(img.size(), CV_8UC3);
+            cv::cvtColor(img, img_rgb, cv::COLOR_GRAY2BGR);
+        }
 
         int win_size_num = (int)min(log(img.size().width / (float)70) / log(1.1), log(img.size().height / (float)70) / log(1.1));
 
@@ -200,7 +205,8 @@ int main(int argc, char *argv[])
                         {
                             wins.push_back(win);
                             scores.push_back(score);
-                            rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
+                            //if (show)
+                            //    rectangle(img_rgb, win, cv::Scalar(255, 0, 0), 1);
                         }
                     }
 
@@ -220,12 +226,14 @@ int main(int argc, char *argv[])
         for (int k = 0; k < wins.size(); k++)
             of << wins[k].x << ' ' << wins[k].y << ' ' << wins[k].width << ' ' << wins[k].height << ' ' << scores[k] << '\n';
 
-        //for (int k = 0; k < wins.size(); k++)
-        //    rectangle(img_rgb, wins[k], cv::Scalar(0, 255, 0), 2);
+        if (show) {
+            for (int k = 0; k < wins.size(); k++)
+                rectangle(img_rgb, wins[k], cv::Scalar(0, 255, 0), 2);
 
-        //cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
-        //cv::imshow("Result", img_rgb);
-        //cv::waitKey(0);
+            cv::namedWindow("Result", cv::WINDOW_AUTOSIZE);
+            cv::imshow("Result", img_rgb);
+            cv::waitKey(0);
+        }
 
         wins.clear();
         scores.clear();
