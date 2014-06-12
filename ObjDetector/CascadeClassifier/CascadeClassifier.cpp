@@ -1,5 +1,5 @@
-#include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
-#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
+#include "CascadeClassifier/CascadeClassifier.h"
+#include "CascadeClassifier/GentleAdaboost.h"
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include "LOG.h"
 #include <cassert>

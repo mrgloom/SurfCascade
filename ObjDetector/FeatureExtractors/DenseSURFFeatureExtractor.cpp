@@ -1,5 +1,5 @@
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
-#include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
+#include "CascadeClassifier/CascadeClassifier.h"
 #include "LOG.h"
 #include <vector>
 #include <string>

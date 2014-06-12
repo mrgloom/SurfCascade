@@ -1,9 +1,9 @@
 #pragma warning( disable : 4290 ) // disable warnings from libconfig
 
 #include "Model.h"
-#include "LearningAlgorithms/CascadeClassifier/CascadeClassifier.h"
-#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
-#include "LearningAlgorithms/CascadeClassifier/WeakClassifiers/LogisticRegression.h"
+#include "CascadeClassifier/CascadeClassifier.h"
+#include "CascadeClassifier/GentleAdaboost.h"
+#include "CascadeClassifier/LogisticRegression.h"
 #include "linear.h"
 #include "libconfig.h++"
 #include "LOG.h"

@@ -17,22 +17,22 @@
     <ClCompile Include="FeatureExtractors\FeatureExtractor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ObjDetector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadeClassifier\CascadeClassifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadeClassifier\LogisticRegression.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadeClassifier\GentleAdaboost.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CascadeClassifier\StageClassifier.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -43,22 +43,22 @@
     <ClInclude Include="FeatureExtractors\FeatureExtractor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LOG.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadeClassifier\CascadeClassifier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadeClassifier\LogisticRegression.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadeClassifier\GentleAdaboost.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CascadeClassifier\StageClassifier.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

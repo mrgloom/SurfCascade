@@ -1,8 +1,8 @@
 #ifndef CASCADECLASSIFIER_H
 #define CASCADECLASSIFIER_H
 
-#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/GentleAdaboost.h"
-#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/StageClassifier.h"
+#include "CascadeClassifier/GentleAdaboost.h"
+#include "CascadeClassifier/StageClassifier.h"
 #include "FeatureExtractors/DenseSURFFeatureExtractor.h"
 #include <vector>
 #include <array>

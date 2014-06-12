@@ -1,7 +1,7 @@
 #ifndef GENTLEADABOOST_H
 #define GENTLEADABOOST_H
 
-#include "LearningAlgorithms/CascadeClassifier/StageClassifiers/StageClassifier.h"
+#include "CascadeClassifier/StageClassifier.h"
 #include <vector>
 
 using std::vector;

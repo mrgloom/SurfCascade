@@ -17,20 +17,20 @@
   <ItemGroup>
     <ClCompile Include="FeatureExtractors\DenseSURFFeatureExtractor.cpp" />
     <ClCompile Include="FeatureExtractors\FeatureExtractor.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.cpp" />
-    <ClCompile Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.cpp" />
+    <ClCompile Include="CascadeClassifier\CascadeClassifier.cpp" />
+    <ClCompile Include="CascadeClassifier\GentleAdaboost.cpp" />
+    <ClCompile Include="CascadeClassifier\StageClassifier.cpp" />
+    <ClCompile Include="CascadeClassifier\LogisticRegression.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ObjDetector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FeatureExtractors\DenseSURFFeatureExtractor.h" />
     <ClInclude Include="FeatureExtractors\FeatureExtractor.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\CascadeClassifier.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\GentleAdaboost.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\StageClassifiers\StageClassifier.h" />
-    <ClInclude Include="LearningAlgorithms\CascadeClassifier\WeakClassifiers\LogisticRegression.h" />
+    <ClInclude Include="CascadeClassifier\CascadeClassifier.h" />
+    <ClInclude Include="CascadeClassifier\GentleAdaboost.h" />
+    <ClInclude Include="CascadeClassifier\StageClassifier.h" />
+    <ClInclude Include="CascadeClassifier\LogisticRegression.h" />
     <ClInclude Include="LOG.h" />
     <ClInclude Include="Model.h" />
   </ItemGroup>
