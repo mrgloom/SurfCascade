@@ -47,12 +47,16 @@ float LogisticRegression::Predict(vector<float>& x)
 {
     double prob;
 
+    // set each field to 0
     __m128 _s = _mm_set_ps1(0);
 
     for (int i = 0; i < x.size(); i += 4) {
         __m128 _t = _mm_mul_ps(_mm_loadu_ps(&w[i]), _mm_loadu_ps(&x.data()[i]));
+
+        // add to four fields of s
         _s = _mm_add_ps(_t, _s);
     }
+    // add up four fields of s
     _s = _mm_hadd_ps(_s, _s);
     _s = _mm_hadd_ps(_s, _s);
     prob = _s.m128_f32[0];
