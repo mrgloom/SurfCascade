@@ -204,7 +204,29 @@ void GentleAdaboost::Train(vector<vector<vector<float>>>& X, vector<bool>& y)
     /* backward removing */
     while (true)
     {
-        break;
+        size_t vec_size = weak_classifiers.size();
+        float best_AUC_score = 0;
+        float curr_AUC_score;
+        int x;
+        for (int i = 0; i < vec_size; i++) {
+            shared_ptr<LogisticRegression> t = weak_classifiers[i];
+            weak_classifiers.erase(weak_classifiers.begin() + i);
+            curr_AUC_score = Evaluate(X, y);
+            weak_classifiers.insert(weak_classifiers.begin() + i, t);
+
+            if (curr_AUC_score > best_AUC_score) {
+                best_AUC_score = curr_AUC_score;
+                x = i;
+            }
+        }
+
+        if (best_AUC_score > total_AUC_score) {
+            total_AUC_score = best_AUC_score;
+            weak_classifiers.erase(weak_classifiers.begin() + x);
+            LOG_INFO("\t\tWeak classifier " << x << "removed.");
+        }
+        else
+            break;
     }
 }
 
