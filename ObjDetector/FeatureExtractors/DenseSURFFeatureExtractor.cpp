@@ -204,10 +204,12 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
 
     int d;
     uchar *I;
-    uchar *Ip;
-    uchar *In;
-    uchar *G1;
-    uchar *G2;
+    uchar *Ip; // previous column
+    uchar *In; // next column
+    uchar *G1; // gradient map pointer
+    uchar *G2; // gradient map pointer
+
+    // sse variables
     __m128i *_Ip;
     __m128i *_In;
     __m128i *_G1;
@@ -231,15 +233,17 @@ void DenseSURFFeatureExtractor::T2bFilter(const Mat& img, uchar *grad)
 
         _Ip = (__m128i *)Ip; _In = (__m128i *)In; _G1 = (__m128i *)G1; _G2 = (__m128i *)G2;
 
+        // w sse boundary
         w_sse = (((w - 2) >> 4) << 4) + 1;
         for (x = 1; x < w_sse; x += 16, _Ip++, _In++)
         {
-            _mm_storeu_si128(_G1++, _mm_subs_epu8(_mm_loadu_si128(_Ip), _mm_loadu_si128(_In)));
+            _mm_storeu_si128(_G1++, _mm_subs_epu8(_mm_loadu_si128(_Ip), _mm_loadu_si128(_In))); // _G1++ = _Ip - _In
             _mm_storeu_si128(_G2++, _mm_subs_epu8(_mm_loadu_si128(_In), _mm_loadu_si128(_Ip)));
         }
 
         Ip = (uchar *)_Ip; In = (uchar *)_In; G1 = (uchar *)_G1; G2 = (uchar *)_G2;
 
+        // after w sse boundary
         for (; x < w - 1; x++) {
             d = *In++ - *Ip++;
             *G1++ = (abs(d) - d) / 2;
@@ -379,6 +383,7 @@ void DenseSURFFeatureExtractor::CalcFeature(const Rect& patch, vector<float>& fe
 
     /* calculate feature value using integral image*/
     _mm_storeu_ps(feature.data() + 0 * 8, _mm_sub_ps(
+        // use integral image to calculate sum of rects[0], four dims a time. (A+D)-(B+C)
         _mm_add_ps(sumtab[rects[0].y][rects[0].x].xmm_f1, sumtab[rects[0].y + rects[0].height][rects[0].x + rects[0].width].xmm_f1),
         _mm_add_ps(sumtab[rects[0].y][rects[0].x + rects[0].width].xmm_f1, sumtab[rects[0].y + rects[0].height][rects[0].x].xmm_f1)));
     _mm_storeu_ps(feature.data() + 0 * 8 + 4, _mm_sub_ps(
@@ -418,25 +423,34 @@ void DenseSURFFeatureExtractor::Normalize(vector<float>& feature)
 
     __m128 _s, _t, _t2;
 
+    // set first field to FLT_EPSILON
     _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
+
+    // sum-of-square
     for (p = p0; p != p1; p+=4)
         _s = _mm_hadd_ps(_s, _mm_mul_ps(_mm_loadu_ps(p), _mm_loadu_ps(p)));
     _s = _mm_hadd_ps(_s, _s);
     _s = _mm_hadd_ps(_s, _s);
 
+    // sum-of-square * theta, use this trick to avoid a division
     _t = _mm_mul_ps(_mm_sqrt_ps(_s), _mm_set_ps1(theta));
+
+    // - sum-of-square * theta
     _t2 = _mm_xor_ps(_t, _mm_set1_ps(-0.f));
 
     _s = _mm_set_ps(FLT_EPSILON, 0, 0, 0);
     for (p = p0; p != p1; p+=4) {
+        // clip values
         _mm_storeu_ps(p, _mm_min_ps(_mm_loadu_ps(p), _t));
         _mm_storeu_ps(p, _mm_max_ps(_mm_loadu_ps(p), _t2));
 
+        // sum-of-square
         _s = _mm_hadd_ps(_s, _mm_mul_ps(_mm_loadu_ps(p), _mm_loadu_ps(p)));
     }
     _s = _mm_hadd_ps(_s, _s);
     _s = _mm_hadd_ps(_s, _s);
 
+    // p/s == p*(1/s)
     _t = _mm_div_ps(_mm_set_ps1(1), _mm_sqrt_ps(_s));
     for (p = p0; p != p1; p += 4)
         _mm_storeu_ps(p, _mm_mul_ps(_mm_loadu_ps(p), _t));
